@@ -136,6 +136,7 @@ class TripTimelineHeader extends StatelessWidget {
 
     return Text(
       status,
+      overflow: TextOverflow.ellipsis,
       style: Theme.of(context)
           .textTheme
           .bodyLarge!
@@ -147,29 +148,29 @@ class TripTimelineHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(
-          margin: EdgeInsets.only(left: 10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildStatusLabel(context),
-              _buildLastUpdateLabel(context),
-            ],
+        Expanded(
+          child: Container(
+            margin: EdgeInsets.only(left: 10),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildStatusLabel(context),
+                _buildLastUpdateLabel(context),
+              ],
+            ),
           ),
         ),
-        Expanded(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              _buildStatusIndicator(context),
-              IconButton(
-                onPressed: reloadData,
-                icon: Icon(MingCuteIcons.mgc_refresh_1_line),
-              )
-            ],
-          ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            _buildStatusIndicator(context),
+            IconButton(
+              onPressed: reloadData,
+              icon: Icon(MingCuteIcons.mgc_refresh_1_line),
+            )
+          ],
         ),
       ],
     );
