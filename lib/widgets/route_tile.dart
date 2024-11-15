@@ -151,7 +151,8 @@ class RouteSmall extends StatelessWidget {
   }
 }
 
-void _goToRoutePage(BuildContext context, model.Route route, DateTime? refTime) {
+void _goToRoutePage(
+    BuildContext context, model.Route route, DateTime? refTime) {
   TransportBloc transBloc = BlocProvider.of<TransportBloc>(context);
   PrefsBloc prefsBloc = BlocProvider.of<PrefsBloc>(context);
   Navigator.push(context, MaterialPageRoute(builder: (navContext) {

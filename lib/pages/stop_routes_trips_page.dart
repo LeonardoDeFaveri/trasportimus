@@ -163,7 +163,9 @@ class RouteTripsPageForStopState extends State<RouteTripsPageForStop> {
                             itemBuilder: (context, idx) {
                               m.Trip trip = trips[idx];
                               int lastSeq = _getLastStopSeq(trip);
-                              int stopSeq = getStopSt(trip, widget.stop, refTime).stopSequence;
+                              int stopSeq =
+                                  getStopSt(trip, widget.stop, refTime)
+                                      .stopSequence;
 
                               var tripTimelineHeader = TripTimelineHeader(
                                 trip: trip,

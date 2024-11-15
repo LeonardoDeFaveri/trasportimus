@@ -40,14 +40,17 @@ int compareStops(m.Stop s1, m.Stop s2) {
 }
 
 List<m.Trip> sortTrips(List<m.Trip> trips, m.Stop refStop, DateTime refTime) {
-  var iter = trips.map((trip) => (getStopSt(trip, refStop, refTime), trip)).toList();
-  iter.sort((a, b) {
-    var arrivalTimeCmp = a.$1.arrivalTime.compareTo(b.$1.arrivalTime);
-    if (arrivalTimeCmp != 0) {
-      return arrivalTimeCmp;
-    }
-    return compareRoutes(a.$2.route, b.$2.route);
-  },);
+  var iter =
+      trips.map((trip) => (getStopSt(trip, refStop, refTime), trip)).toList();
+  iter.sort(
+    (a, b) {
+      var arrivalTimeCmp = a.$1.arrivalTime.compareTo(b.$1.arrivalTime);
+      if (arrivalTimeCmp != 0) {
+        return arrivalTimeCmp;
+      }
+      return compareRoutes(a.$2.route, b.$2.route);
+    },
+  );
   return iter.map((el) => el.$2).toList();
 }
 
@@ -59,18 +62,18 @@ int compareTripsAtStop(m.Trip t1, m.Trip t2, m.Stop stop) {
 }
 
 m.StopTime getStopSt(m.Trip trip, m.Stop stop, DateTime refTime) {
-    for (m.StopTime st in trip.stopTimes) {
-      if (st.stop.id == stop.id) {
-        if ((st.arrivalTime.isAfter(refTime) && trip.lastUpdate == null) ||
-            (st.stopSequence >= trip.lastSequenceDetection &&
-                trip.lastUpdate != null)) {
-          return st;
-        }
+  for (m.StopTime st in trip.stopTimes) {
+    if (st.stop.id == stop.id) {
+      if ((st.arrivalTime.isAfter(refTime) && trip.lastUpdate == null) ||
+          (st.stopSequence >= trip.lastSequenceDetection &&
+              trip.lastUpdate != null)) {
+        return st;
       }
     }
-    // Should never occur
-    return trip.stopTimes[0];
   }
+  // Should never occur
+  return trip.stopTimes[0];
+}
 
 class Defaults {
   static final SpinKitChasingDots loader = SpinKitChasingDots(
@@ -256,9 +259,6 @@ class Defaults {
 
   static ChoicePromptDelegate<T> delegatePopupDialog<T>() {
     return ChoicePrompt.delegatePopupDialog<T>(
-        shape: RoundedRectangleBorder(
-          borderRadius: Defaults.borderRadius
-        )
-      );
+        shape: RoundedRectangleBorder(borderRadius: Defaults.borderRadius));
   }
 }

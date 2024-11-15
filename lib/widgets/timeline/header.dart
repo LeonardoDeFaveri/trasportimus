@@ -92,7 +92,11 @@ class TripTimelineHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        RouteTile(trip?.route ?? route!, refTime: refTime, isClickable: allowRouteNavigation,),
+        RouteTile(
+          trip?.route ?? route!,
+          refTime: refTime,
+          isClickable: allowRouteNavigation,
+        ),
         Expanded(
           child: Text(
             trip?.route.longName ?? route!.longName,
