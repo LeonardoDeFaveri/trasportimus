@@ -1,0 +1,55 @@
+{
+    "favRoutes": "Le tue corse",
+    "noFavRoutes": "Qui troverai le tue corse preferite",
+    "favStops": "Le tue fermate",
+    "noFavStops": "Qui troverai le tue fermate preferite",
+
+    "routes": "Linee e tratte",
+    "pickArea": "Scegli un area di riferimento",
+    "railwaysAndCableways": "Ferrovie e Funivie",
+    "extraurban": "Extraurbano",
+    "urban": "Urbano",
+    "railways": "Ferrovie",
+    "cableways": "Funivie",
+    "area": "Bacino {id}",
+    "urbanRoutes": "Urbane area {area}",
+    "extraurbanRoutes": "Extraurbane bacino {area}",
+
+    "stops": "Lista fermate",
+    "stopSearchHint": "Cerca fermate",
+    "filterArea": "Filtra per area",
+    "all": "Tutte",
+
+    "route": "Linea {name}",
+    "noRealTimeData": "Dati in tempo reale non disponibili",
+    "onTime": "In orario",
+    "late": "In ritardo di {time}'",
+    "early": "In anticipo di {time}'",
+    "yetToStart": "Corsa non ancora iniziata",
+    "ended": "Corsa terminata",
+    "noReading": "Nessun rilevamento",
+    "lastReading": "Ultimo rilevamento alle {time}",
+    "noReadingAlert": "Lo stato di avanzamento della corsa è basato unicamente sull'orario previsto. Ritardi ed anticipi non sono considerati.",
+    "noReadingAlertTitle": "Occhio",
+    "directionChoice": "Filtra per direzione",
+    "bothDirections": "Entrambe",
+    "forwardOnly": "Andata",
+    "backwardOnly": "Ritorno",
+
+    "news": "Avvisi per la linea {name}",
+    "goToNews": "Vai al comunicato",
+
+    "stop": "Fermata",
+    "results": "{count} risultati",
+    "result": "1 risultato",
+    "towards": "verso",
+
+    "noRouteMsg": "Oh... non ho trovato corse",
+    "noRouteHint": "Prova con un altro orario",
+    "noDataTitle": "Oh nooo!",
+    "noDataErr": "Non riesco a recuperare i dati :-(",
+    "noDataRetryTitle": "Oh-oh!",
+    "noDataRetryErr": "Non sono risucito a recuperare i dati, ma potresti riprovare!",
+
+    "retry": "Riprova"
+}

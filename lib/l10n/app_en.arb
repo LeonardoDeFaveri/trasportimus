@@ -1,0 +1,135 @@
+{
+    "favRoutes": "Your routes",
+    "@favRoutes": {
+        "description": "Title for favourite routes widget"
+    },
+    "noFavRoutes": "Here you'll find your favourire routes",
+    "favStops": "Your stops",
+    "@favStops": {
+        "description": "Title for favourite stops widget"
+    },
+    "noFavStops": "Here you'll find your favourire stops",
+
+    "routes": "Routes and areas",
+    "@routes": {
+        "description": "Title for routes area selector"
+    },
+    "pickArea": "Choose an area",
+    "@pickArea": {
+        "description": "Pick an area message"
+    },
+    "railwaysAndCableways": "Railways and Cableways",
+    "extraurban": "Extra-urban",
+    "urban": "Urban",
+    "railways": "Railways",
+    "cableways": "Cableways",
+    "area": "Area {id}",
+    "@area": {
+        "placeholders": {
+            "id": {
+                "type": "int"
+            }
+        }
+    },
+    "urbanRoutes": "Urbans for {area}",
+    "@urbanRoutes": {
+        "placeholders": {
+            "area": {
+                "type": "String"
+            }
+        }
+    },
+    "extraurbanRoutes": "Extra-urbans for area {area}",
+    "@extraurbanRoutes": {
+        "placeholders": {
+            "area": {
+                "type": "int"
+            }
+        }
+    },
+
+    "stops": "All stops",
+    "@stops": {
+        "description": "Title for all stops page"
+    },
+    "stopSearchHint": "Find stops",
+    "filterArea": "Pick an area",
+    "all": "All",
+
+    "route": "Line {name}",
+    "@route": {
+        "description": "Title for route detail page",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "noRealTimeData": "No real-time data available",
+    "onTime": "On time",
+    "late": "{time}' late",
+    "@late": {
+        "placeholders": {
+            "time": {
+                "type": "int"
+            }
+        }
+    },
+    "early": "{time}' early",
+    "@early": {
+        "placeholders": {
+            "time": {
+                "type": "int"
+            }
+        }
+    },
+    "yetToStart": "Trip not started yet",
+    "ended": "Trip finished",
+    "noReading": "No reading",
+    "lastReading": "Last reading at {time}",
+    "@lastReading": {
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "noReadingAlert": "Line progress is solely based on expected arrival time at stops. Delays are not considered.",
+    "noReadingAlertTitle": "Be careful",
+    "directionChoice": "Pick a direction",
+    "bothDirections": "Both",
+    "forwardOnly": "Forward",
+    "backwardOnly": "Backward",
+
+    "news": "News for line {name}",
+    "@news": {
+        "description": "Title for news page",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "goToNews": "Go to full news",
+
+    "stop": "Stop info",
+    "results": "{count} results",
+    "@results": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "result": "1 result",
+    "towards": "To",
+
+    "noRouteMsg": "Oh... I've found no routes",
+    "noRouteHint": "Try with another time schedule",
+    "noDataTitle": "Oh nooo!",
+    "noDataErr": "I could not retrieve any data :-(",
+    "noDataRetryTitle": "Oh-oh!",
+    "noDataRetryErr": "I could not retrieve any data, but you may retry",
+
+    "retry": "Retry"
+}
