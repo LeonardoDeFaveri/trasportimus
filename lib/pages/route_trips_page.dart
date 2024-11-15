@@ -302,9 +302,7 @@ class RouteTripsPageState extends State<RouteTripsPage> {
             BlocProvider(
               create: (context) => tb.TransportBloc.reuse(repo: transBloc.repo),
             ),
-            BlocProvider(
-              create: (context) => pb.PrefsBloc(prefsBloc.prefs),
-            )
+            BlocProvider.value(value: prefsBloc)
           ], child: StopTripsPage(st.stop, refTime: st.arrivalTime)),
         ));
   }

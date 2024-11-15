@@ -274,9 +274,7 @@ class StopTripsPageState extends State<StopTripsPage> {
               ),
             ),
           ),
-          BlocProvider(
-            create: (context) => pb.PrefsBloc(prefsBloc.prefs),
-          )
+          BlocProvider.value(value: prefsBloc)
         ],
         child:
             RouteTripsPageForStop(widget.stop, trips, index, refTime: refTime),

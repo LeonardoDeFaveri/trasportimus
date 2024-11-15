@@ -21,6 +21,7 @@ class TripTimelineHeader extends StatelessWidget {
   final bool isFavourite;
   final void Function() reloadData;
   final void Function(DateTime, Direction) loadData;
+  final bool allowRouteNavigation;
   final bool disableDirection;
   final DateTime refTime;
   final Direction direction;
@@ -33,10 +34,12 @@ class TripTimelineHeader extends StatelessWidget {
     required this.loadData,
     required this.refTime,
     required this.direction,
+    bool? allowRouteNavigation,
     bool? disableDirection,
     super.key,
   })  : route = null,
         offTime = refTime.add(offset),
+        allowRouteNavigation = allowRouteNavigation ?? false,
         disableDirection = disableDirection ?? false;
 
   TripTimelineHeader.noStatus({
@@ -46,10 +49,12 @@ class TripTimelineHeader extends StatelessWidget {
     required this.loadData,
     required this.refTime,
     required this.direction,
+    bool? allowRouteNavigation,
     bool? disableDirection,
     super.key,
   })  : trip = null,
         offTime = refTime.add(offset),
+        allowRouteNavigation = allowRouteNavigation ?? false,
         disableDirection = disableDirection ?? false;
 
   @override
@@ -87,7 +92,7 @@ class TripTimelineHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        RouteTile(trip?.route ?? route!),
+        RouteTile(trip?.route ?? route!, isClickable: allowRouteNavigation,),
         Expanded(
           child: Text(
             trip?.route.longName ?? route!.longName,

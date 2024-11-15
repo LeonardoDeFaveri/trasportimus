@@ -155,8 +155,8 @@ void _goToRoutePage(BuildContext context, model.Route route) {
   Navigator.push(context, MaterialPageRoute(builder: (navContext) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider.value(
-          value: transBloc,
+        BlocProvider(
+          create: (context) => TransportBloc.reuse(repo: transBloc.repo),
         ),
         BlocProvider.value(
           value: prefsBloc,
