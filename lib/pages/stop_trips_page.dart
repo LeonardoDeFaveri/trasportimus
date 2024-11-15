@@ -123,8 +123,7 @@ class StopTripsPageState extends State<StopTripsPage> {
                 offTime = state.refTime;
                 refTime = offTime.add(negOffset);
                 isAutoReloading = false;
-                trips = state.trips;
-                trips.sort(compareTrips);
+                trips = sortTrips(state.trips, widget.stop, refTime);
               }
               if (!autoReloadTimer.isActive) {
                 _activateTimer();
@@ -191,7 +190,7 @@ class StopTripsPageState extends State<StopTripsPage> {
   }
 
   Widget _buildTimeIndicator(m.Trip trip, ThemeData theme) {
-    m.StopTime st = _getStopSt(trip);
+    m.StopTime st = getStopSt(trip, widget.stop, refTime);
 
     Widget programmedTime = Text(
       format('{:0>2}:{:0>2}', st.arrivalTime.hour, st.arrivalTime.minute),
@@ -224,27 +223,6 @@ class StopTripsPageState extends State<StopTripsPage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [programmedTime, actualTime],
     );
-  }
-
-  int compareTrips(m.Trip t1, m.Trip t2) {
-    m.StopTime st1 = _getStopSt(t1);
-    m.StopTime st2 = _getStopSt(t2);
-
-    return st1.arrivalTime.compareTo(st2.arrivalTime);
-  }
-
-  m.StopTime _getStopSt(m.Trip trip) {
-    for (m.StopTime st in trip.stopTimes) {
-      if (st.stop.id == widget.stop.id) {
-        if ((st.arrivalTime.isAfter(refTime) && trip.lastUpdate == null) ||
-            (st.stopSequence >= trip.lastSequenceDetection &&
-                trip.lastUpdate != null)) {
-          return st;
-        }
-      }
-    }
-    // Should never occur
-    return trip.stopTimes[0];
   }
 
   void _activateTimer() {

@@ -39,11 +39,16 @@ int compareStops(m.Stop s1, m.Stop s2) {
   return n1.compareTo(n2);
 }
 
-int compareTrips(m.Trip t1, m.Trip t2) {
-  m.StopTime st1 = t1.stopTimes.first;
-  m.StopTime st2 = t2.stopTimes.first;
-
-  return st1.arrivalTime.compareTo(st2.arrivalTime);
+List<m.Trip> sortTrips(List<m.Trip> trips, m.Stop refStop, DateTime refTime) {
+  var iter = trips.map((trip) => (getStopSt(trip, refStop, refTime), trip)).toList();
+  iter.sort((a, b) {
+    var arrivalTimeCmp = a.$1.arrivalTime.compareTo(b.$1.arrivalTime);
+    if (arrivalTimeCmp != 0) {
+      return arrivalTimeCmp;
+    }
+    return compareRoutes(a.$2.route, b.$2.route);
+  },);
+  return iter.map((el) => el.$2).toList();
 }
 
 int compareTripsAtStop(m.Trip t1, m.Trip t2, m.Stop stop) {
@@ -52,6 +57,20 @@ int compareTripsAtStop(m.Trip t1, m.Trip t2, m.Stop stop) {
 
   return st1.arrivalTime.compareTo(st2.arrivalTime);
 }
+
+m.StopTime getStopSt(m.Trip trip, m.Stop stop, DateTime refTime) {
+    for (m.StopTime st in trip.stopTimes) {
+      if (st.stop.id == stop.id) {
+        if ((st.arrivalTime.isAfter(refTime) && trip.lastUpdate == null) ||
+            (st.stopSequence >= trip.lastSequenceDetection &&
+                trip.lastUpdate != null)) {
+          return st;
+        }
+      }
+    }
+    // Should never occur
+    return trip.stopTimes[0];
+  }
 
 class Defaults {
   static final SpinKitChasingDots loader = SpinKitChasingDots(

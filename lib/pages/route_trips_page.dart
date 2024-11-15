@@ -16,8 +16,9 @@ import 'package:trasportimus_repository/model/model.dart' as m;
 
 class RouteTripsPage extends StatefulWidget {
   final m.Route route;
+  final DateTime? refTime;
 
-  const RouteTripsPage(this.route, {super.key});
+  const RouteTripsPage(this.route, {this.refTime, super.key});
 
   @override
   State<StatefulWidget> createState() => RouteTripsPageState();
@@ -43,7 +44,7 @@ class RouteTripsPageState extends State<RouteTripsPage> {
   @override
   void initState() {
     super.initState();
-    refTime = DateTime.now();
+    refTime = widget.refTime ?? DateTime.now();
     offTime = refTime.add(offset);
     direction = m.Direction.both;
     transBloc = context.read<tb.TransportBloc>();
@@ -143,7 +144,6 @@ class RouteTripsPageState extends State<RouteTripsPage> {
               if (trips.isEmpty) {
                 return _buildNoTripView(context);
               }
-              trips.sort(compareTrips);
               pageIndex ??= _findClosestToRefTime();
 
               return DefaultTabController(

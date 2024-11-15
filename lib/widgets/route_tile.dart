@@ -8,11 +8,12 @@ import 'package:trasportimus_repository/model/model.dart' as model;
 
 class RouteTile extends StatelessWidget {
   final model.Route route;
+  final DateTime? refTime;
   final bool isClickable;
   final EdgeInsets margin;
 
   const RouteTile(this.route,
-      {bool? isClickable, EdgeInsets? margin, super.key})
+      {this.refTime, bool? isClickable, EdgeInsets? margin, super.key})
       : isClickable = isClickable ?? false,
         margin = margin ?? const EdgeInsets.all(8);
 
@@ -66,7 +67,7 @@ class RouteTile extends StatelessWidget {
     );
     if (isClickable) {
       return GestureDetector(
-        onTap: () => _goToRoutePage(context, route),
+        onTap: () => _goToRoutePage(context, route, refTime),
         child: tile,
       );
     } else {
@@ -78,8 +79,9 @@ class RouteTile extends StatelessWidget {
 class RouteExpanded extends StatelessWidget {
   final model.Route route;
   final bool isFavourite;
+  final DateTime? refTime;
 
-  const RouteExpanded(this.route, this.isFavourite, {super.key});
+  const RouteExpanded(this.route, this.isFavourite, {this.refTime, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +105,7 @@ class RouteExpanded extends StatelessWidget {
         overflow: TextOverflow.clip,
       ),
       horizontalTitleGap: 4,
-      onTap: () => _goToRoutePage(context, route),
+      onTap: () => _goToRoutePage(context, route, refTime),
     );
   }
 }
@@ -149,7 +151,7 @@ class RouteSmall extends StatelessWidget {
   }
 }
 
-void _goToRoutePage(BuildContext context, model.Route route) {
+void _goToRoutePage(BuildContext context, model.Route route, DateTime? refTime) {
   TransportBloc transBloc = BlocProvider.of<TransportBloc>(context);
   PrefsBloc prefsBloc = BlocProvider.of<PrefsBloc>(context);
   Navigator.push(context, MaterialPageRoute(builder: (navContext) {
@@ -162,7 +164,7 @@ void _goToRoutePage(BuildContext context, model.Route route) {
           value: prefsBloc,
         )
       ],
-      child: RouteTripsPage(route),
+      child: RouteTripsPage(route, refTime: refTime),
     );
   }));
 }

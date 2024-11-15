@@ -139,7 +139,7 @@ class RouteTripsPageForStopState extends State<RouteTripsPageForStop> {
               offTime = state.refTime;
               refTime = offTime.add(negOffset);
               isAutoReloading = false;
-              trips = state.trips;
+              trips = sortTrips(state.trips, widget.stop, refTime);
               if (trips.isEmpty) {
                 return Container(
                   padding: const EdgeInsets.all(8),
@@ -147,7 +147,6 @@ class RouteTripsPageForStopState extends State<RouteTripsPageForStop> {
                 );
               }
 
-              trips.sort(compareTrips);
               return DefaultTabController(
                 length: min(5, trips.length),
                 child: Builder(builder: (context) {
@@ -162,8 +161,9 @@ class RouteTripsPageForStopState extends State<RouteTripsPageForStop> {
                         Expanded(
                           child: PageView.builder(
                             itemBuilder: (context, idx) {
-                              m.Trip trip = trips[index];
+                              m.Trip trip = trips[idx];
                               int lastSeq = _getLastStopSeq(trip);
+                              int stopSeq = getStopSt(trip, widget.stop, refTime).stopSequence;
 
                               var tripTimelineHeader = TripTimelineHeader(
                                 trip: trip,
@@ -199,9 +199,9 @@ class RouteTripsPageForStopState extends State<RouteTripsPageForStop> {
                                       .bodyLarge
                                       ?.copyWith(fontWeight: FontWeight.bold),
                                 ),
-                                markedItems: {lastSeq + 1},
+                                markedItems: {stopSeq},
                                 lastItem: lastSeq,
-                                focusItem: lastSeq,
+                                focusItem: stopSeq,
                               );
                               return Column(
                                 children: [

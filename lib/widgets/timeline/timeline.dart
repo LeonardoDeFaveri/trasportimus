@@ -15,7 +15,7 @@ class TripTimeline extends StatelessWidget {
   /// How should a marked item be represented?
   final Widget Function(BuildContext, StopTime) markedItemBuilder;
 
-  /// Should return a set of stoptime sequence numbers that requires a different
+  /// A set of stoptime sequence numbers that requires a different
   /// presentation from the others.
   final Set<int> markedItems;
 
