@@ -9,7 +9,7 @@ import 'package:trasportimus/blocs/prefs/prefs_bloc.dart' as pb;
 import 'package:trasportimus/blocs/transport/transport_bloc.dart' as tb;
 import 'package:trasportimus/pages/stop_routes_trips_page.dart';
 import 'package:trasportimus/utils.dart';
-import 'package:trasportimus/widgets/route_tile.dart';
+import 'package:trasportimus/widgets/tiles/route.dart';
 import 'package:trasportimus/widgets/stop_trips/stop_trip_info.dart';
 import 'package:trasportimus_repository/model/model.dart' as m;
 

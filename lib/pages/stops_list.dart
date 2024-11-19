@@ -8,7 +8,7 @@ import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:trasportimus/blocs/prefs/prefs_bloc.dart' as pb;
 import 'package:trasportimus/blocs/transport/transport_bloc.dart' as tb;
 import 'package:trasportimus/utils.dart';
-import 'package:trasportimus/widgets/stop_tile.dart';
+import 'package:trasportimus/widgets/tiles/stop.dart';
 import 'package:trasportimus_repository/model/model.dart';
 
 class StopsList extends StatefulWidget {
@@ -63,6 +63,8 @@ class StopsListState extends State<StopsList> {
       icon: const Icon(MingCuteIcons.mgc_close_line),
     );
     var searchBar = SearchBar(
+      shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: Defaults.borderRadius)),
       constraints: BoxConstraints(maxHeight: 50),
       autoFocus: true,
       trailing: [backButton],

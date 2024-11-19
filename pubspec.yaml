@@ -52,6 +52,11 @@ dependencies:
   format: ^1.5.2
   datetime_picker_formfield_new: ^2.1.0
   pulsator: ^1.0.0+2
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  flutter_map_location_marker: ^9.1.1
+  geolocator: ^13.0.2
+  flutter_compass: ^0.8.1
 
 dev_dependencies:
   flutter_launcher_icons: "^0.14.1"

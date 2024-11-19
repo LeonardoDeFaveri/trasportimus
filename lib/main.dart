@@ -10,6 +10,7 @@ import 'package:trasportimus/blocs/prefs/prefs_bloc.dart';
 import 'package:trasportimus/blocs/transport/transport_bloc.dart';
 import 'package:trasportimus/l10n/l10n.dart';
 import 'package:trasportimus/pages/main_page.dart';
+import 'package:trasportimus/pages/map_page.dart';
 import 'package:trasportimus/pages/routes_area_selector.dart';
 import 'package:trasportimus/pages/stops_list.dart';
 import 'package:trasportimus/utils.dart';
@@ -52,7 +53,9 @@ class MyApp extends StatelessWidget {
         title: 'Transportimus',
         theme: Defaults.themeData,
         supportedLocales: L10n.all,
-        locale: Locale(Platform.localeName),
+        locale: Locale(L10n.all.contains(Locale(Platform.localeName))
+            ? Platform.localeName
+            : 'en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: AnimatedSplashScreen.withScreenFunction(
           splash: Center(
@@ -66,9 +69,13 @@ class MyApp extends StatelessWidget {
                   MainPage(),
                   AreaChoosingPage(),
                   StopsList(),
-                  MainPage(),
+                  MapPage(),
                 ]),
                 bottomNavigationBar: TabBar(
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicatorWeight: 3,
+                  labelPadding: EdgeInsets.all(8),
+                  labelStyle: TextStyle(fontSize: 32),
                   tabs: [
                     Icon(MingCuteIcons.mgc_home_1_line),
                     Icon(MingCuteIcons.mgc_bus_2_line),

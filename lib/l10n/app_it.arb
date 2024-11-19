@@ -51,5 +51,9 @@
     "noDataRetryTitle": "Oh-oh!",
     "noDataRetryErr": "Non sono risucito a recuperare i dati, ma potresti riprovare!",
 
-    "retry": "Riprova"
+    "retry": "Riprova",
+
+    "mapSearchHint": "Cerca una località",
+    "mapStopsLoading": "Sto recuperando le fermate",
+    "mapStopsLoadingFailed": "Nessuna fermata trovata"
 }

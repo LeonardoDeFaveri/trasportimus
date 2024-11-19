@@ -10,8 +10,8 @@ import 'package:trasportimus/blocs/prefs/prefs_bloc.dart' as pb;
 import 'package:trasportimus/blocs/transport/transport_bloc.dart' as tb;
 import 'package:trasportimus/pages/stop_trips_page.dart';
 import 'package:trasportimus/utils.dart';
-import 'package:trasportimus/widgets/route_tile.dart';
-import 'package:trasportimus/widgets/stop_tile.dart';
+import 'package:trasportimus/widgets/tiles/route.dart';
+import 'package:trasportimus/widgets/tiles/stop.dart';
 import 'package:trasportimus_repository/model/model.dart' as m;
 
 class StopTripsInfo extends StatelessWidget {

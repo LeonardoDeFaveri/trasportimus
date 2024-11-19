@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trasportimus/blocs/prefs/prefs_bloc.dart';
 import 'package:trasportimus/utils.dart';
-import 'package:trasportimus/widgets/favourite_routes.dart';
-import 'package:trasportimus/widgets/favourite_stops.dart';
+import 'package:trasportimus/widgets/favourites/routes.dart';
+import 'package:trasportimus/widgets/favourites/stops.dart';
 import 'package:trasportimus_repository/model/model.dart' as model;
 
 class MainPage extends StatefulWidget {
