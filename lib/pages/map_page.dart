@@ -5,6 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:location/location.dart' as l;
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:trasportimus/blocs/prefs/prefs_bloc.dart' as pb;
 import 'package:trasportimus/blocs/transport/transport_bloc.dart' as tb;
@@ -28,9 +29,9 @@ class MapPageState extends State<MapPage> {
   late final tb.TransportBloc transBloc;
   late final pb.PrefsBloc prefsBloc;
   late final MapController ctrl;
-  late final Stream<Position?> _geolocatorStream;
+  late Stream<Position> _geolocatorStream;
   late final Stream<CompassEvent?> _flutterCompassStream;
-  late final Stream<LocationMarkerPosition?> _positionStream;
+  late Stream<LocationMarkerPosition?> _positionStream;
   late final Stream<LocationMarkerHeading?> _headingStream;
   late LatLng? currentPosition;
   late double currentZoom;
@@ -45,8 +46,7 @@ class MapPageState extends State<MapPage> {
     prefsBloc = context.read<pb.PrefsBloc>();
     prefsBloc.add(pb.FetchStops());
     ctrl = MapController();
-    var locationSettings = AndroidSettings(
-        accuracy: LocationAccuracy.low, forceLocationManager: true);
+    var locationSettings = AndroidSettings(accuracy: LocationAccuracy.low);
     _geolocatorStream =
         Geolocator.getPositionStream(locationSettings: locationSettings)
             .asBroadcastStream();
@@ -149,39 +149,50 @@ class MapPageState extends State<MapPage> {
     var theme = Theme.of(context);
 
     return StreamBuilder(
-      stream: _geolocatorStream,
+      stream: Geolocator.getServiceStatusStream(),
       builder: (context, snapshot) {
-        Widget child;
-        if (!snapshot.hasData) {
-          child = Icon(
-            MingCuteIcons.mgc_aiming_2_line,
-            color: theme.colorScheme.error,
-            size: 32,
+        Widget noDataIcon = Icon(
+          MingCuteIcons.mgc_aiming_2_line,
+          color: theme.colorScheme.error,
+          size: 32,
+        );
+        if (snapshot.data != ServiceStatus.enabled) {
+          return FloatingActionButton(
+            onPressed: () => _goToCurrentPosition(attach: true),
+            shape: CircleBorder(),
+            backgroundColor: theme.colorScheme.surface,
+            child: noDataIcon,
           );
-        } else {
-          var position =
-              LatLng(snapshot.data!.latitude, snapshot.data!.longitude);
-
-          if (ctrl.camera.center == position) {
-            child = Icon(
-              MingCuteIcons.mgc_aiming_2_fill,
-              color: theme.colorScheme.primary,
-              size: 32,
-            );
-          } else {
-            child = Icon(
-              MingCuteIcons.mgc_aiming_2_line,
-              color: theme.colorScheme.primary,
-              size: 32,
-            );
-          }
         }
+        return StreamBuilder(
+          stream: _positionStream,
+          builder: (context, snapshot) {
+            var child = noDataIcon;
+            if (snapshot.hasData) {
+              var position =
+                  LatLng(snapshot.data!.latitude, snapshot.data!.longitude);
 
-        return FloatingActionButton(
-          onPressed: () => _goToCurrentPosition(),
-          shape: CircleBorder(),
-          backgroundColor: theme.colorScheme.surface,
-          child: child,
+              if (ctrl.camera.center == position) {
+                child = Icon(
+                  MingCuteIcons.mgc_aiming_2_fill,
+                  color: theme.colorScheme.primary,
+                  size: 32,
+                );
+              } else {
+                child = Icon(
+                  MingCuteIcons.mgc_aiming_2_line,
+                  color: theme.colorScheme.primary,
+                  size: 32,
+                );
+              }
+            }
+            return FloatingActionButton(
+              onPressed: () => _goToCurrentPosition(attach: true),
+              shape: CircleBorder(),
+              backgroundColor: theme.colorScheme.surface,
+              child: child,
+            );
+          },
         );
       },
     );
@@ -235,14 +246,16 @@ class MapPageState extends State<MapPage> {
     );
   }
 
-  void _goToCurrentPosition() async {
-    if (!await Geolocator.isLocationServiceEnabled()) {
-      return;
-    }
-
+  void _goToCurrentPosition({bool? attach}) async {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.always ||
         permission == LocationPermission.whileInUse) {
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        if (!await l.Location().requestService()) {
+          return;
+        }
+      }
+
       Position position = await Geolocator.getCurrentPosition(
         locationSettings: LocationSettings(
           accuracy: LocationAccuracy.low,
@@ -251,6 +264,7 @@ class MapPageState extends State<MapPage> {
       setState(() {
         currentPosition = LatLng(position.latitude, position.longitude);
         ctrl.move(currentPosition!, currentZoom);
+        if (attach == true) {}
       });
     }
   }
