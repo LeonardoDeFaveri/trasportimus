@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
@@ -257,6 +258,8 @@ class MapPageState extends State<MapPage> {
   }
 
   Widget _buildMarkerLayer(BuildContext context) {
+    var theme = Theme.of(context);
+
     return BlocConsumer<pb.PrefsBloc, pb.PrefsState>(
       listener: (context, state) {
         if (state is pb.PrefsLoadedStops) {
@@ -297,7 +300,33 @@ class MapPageState extends State<MapPage> {
                 );
               }
             }
-            return MarkerLayer(rotate: true, markers: markers);
+            return MarkerClusterLayerWidget(
+              options: MarkerClusterLayerOptions(
+                maxClusterRadius: 150,
+                size: const Size(50, 50),
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(50),
+                markers: markers,
+                rotate: true,
+                builder: (context, markers) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                      color: theme.colorScheme.primary,
+                    ),
+                    child: Center(
+                      child: Text(
+                        markers.length.toString(),
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                            color: theme.colorScheme.onPrimary,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+            //return MarkerLayer(rotate: true, markers: markers);
           },
         );
       },
