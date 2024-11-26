@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_compass/flutter_compass.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:location/location.dart' as l;
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:trasportimus/blocs/prefs/prefs_bloc.dart' as pb;
 import 'package:trasportimus/blocs/transport/transport_bloc.dart' as tb;
+import 'package:trasportimus/location_utils.dart';
 import 'package:trasportimus/pages/stop_trips_page.dart';
 import 'package:trasportimus/widgets/map/search_bar.dart';
 import 'package:trasportimus/widgets/tiles/stop.dart';
@@ -29,10 +28,8 @@ class MapPageState extends State<MapPage> {
   late final tb.TransportBloc transBloc;
   late final pb.PrefsBloc prefsBloc;
   late final MapController ctrl;
-  late Stream<Position> _geolocatorStream;
-  late final Stream<CompassEvent?> _flutterCompassStream;
-  late Stream<LocationMarkerPosition?> _positionStream;
-  late final Stream<LocationMarkerHeading?> _headingStream;
+  late bool shouldAlignPosition;
+  late bool shouldAlignDirection;
   late LatLng? currentPosition;
   late double currentZoom;
   late List<Stop> stops;
@@ -46,23 +43,18 @@ class MapPageState extends State<MapPage> {
     prefsBloc = context.read<pb.PrefsBloc>();
     prefsBloc.add(pb.FetchStops());
     ctrl = MapController();
-    var locationSettings = AndroidSettings(accuracy: LocationAccuracy.low);
-    _geolocatorStream =
-        Geolocator.getPositionStream(locationSettings: locationSettings)
-            .asBroadcastStream();
-    _flutterCompassStream = FlutterCompass.events!.asBroadcastStream();
-    const factory = LocationMarkerDataStreamFactory();
-    _positionStream = factory.fromGeolocatorPositionStream(
-      stream: _geolocatorStream,
-    );
-    _headingStream = factory.fromCompassHeadingStream(
-      stream: _flutterCompassStream,
-    );
+    shouldAlignPosition = false;
+    shouldAlignDirection = false;
     currentZoom = initialZoom;
+
     stops = [];
     favStops = {};
 
-    _goToCurrentPosition();
+    LocationUtils.instance.createStreams().then((value) {
+      if (value == LocationStatus.ok) {
+        _goToCurrentPosition();
+      }
+    });
   }
 
   @override
@@ -85,6 +77,14 @@ class MapPageState extends State<MapPage> {
               event is MapEventMoveEnd) {
             setState(() {
               currentZoom = event.camera.zoom;
+            });
+          }
+        },
+        onPositionChanged: (camera, hasGesture) {
+          if (hasGesture && shouldAlignPosition) {
+            setState(() {
+              shouldAlignPosition = false;
+              shouldAlignDirection = false;
             });
           }
         },
@@ -125,77 +125,135 @@ class MapPageState extends State<MapPage> {
     );
   }
 
-  CurrentLocationLayer _buildLocationMarkerLayer(BuildContext context) {
+  Widget _buildLocationMarkerLayer(BuildContext context) {
     var theme = Theme.of(context);
+    AlignOnUpdate alignPosition = AlignOnUpdate.never;
+    if (shouldAlignPosition) {
+      alignPosition = AlignOnUpdate.always;
+    }
+    AlignOnUpdate alignDirection = AlignOnUpdate.never;
+    if (shouldAlignDirection) {
+      alignDirection = AlignOnUpdate.always;
+    }
 
-    return CurrentLocationLayer(
-      positionStream: _positionStream,
-      headingStream: _headingStream,
-      style: LocationMarkerStyle(
-        headingSectorColor: theme.colorScheme.primary,
-        accuracyCircleColor: Colors.white38,
-        marker: Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: theme.colorScheme.primary,
-            border: Border.all(width: 2, color: Colors.white),
-          ),
-        ),
-      ),
+    return StreamBuilder(
+      stream: Geolocator.getServiceStatusStream(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || snapshot.data == ServiceStatus.enabled) {
+          return FutureBuilder(
+            future: LocationUtils.instance.createStreams(requestService: false),
+            builder: (context, snapshot) {
+              if (snapshot.data != LocationStatus.ok) {
+                return SizedBox();
+              }
+
+              return CurrentLocationLayer(
+                positionStream: LocationUtils.instance.getPositionStream(),
+                headingStream: LocationUtils.instance.getHeadingStream(),
+                style: LocationMarkerStyle(
+                  headingSectorColor: theme.colorScheme.primary,
+                  accuracyCircleColor: Colors.white38,
+                  marker: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: theme.colorScheme.primary,
+                      border: Border.all(width: 2, color: Colors.white),
+                    ),
+                  ),
+                ),
+                alignDirectionOnUpdate: alignDirection,
+                alignPositionOnUpdate: alignPosition,
+              );
+            },
+          );
+        } else {
+          return SizedBox();
+        }
+      },
     );
   }
 
   Widget _buildLocationButton() {
     var theme = Theme.of(context);
+    Widget noDataIcon = Icon(
+      MingCuteIcons.mgc_aiming_2_line,
+      color: theme.colorScheme.error,
+      size: 32,
+    );
+    Widget noDataButton = FloatingActionButton(
+      onPressed: () {
+        LocationUtils.instance
+            .createStreams(requestService: true)
+            .then((status) {
+          if (status == LocationStatus.ok) {
+            _goToCurrentPosition(attachPosition: true);
+          }
+        });
+      },
+      shape: CircleBorder(),
+      backgroundColor: theme.colorScheme.surface,
+      child: noDataIcon,
+    );
 
     return StreamBuilder(
       stream: Geolocator.getServiceStatusStream(),
       builder: (context, snapshot) {
-        Widget noDataIcon = Icon(
-          MingCuteIcons.mgc_aiming_2_line,
-          color: theme.colorScheme.error,
-          size: 32,
-        );
-        if (snapshot.data != ServiceStatus.enabled) {
-          return FloatingActionButton(
-            onPressed: () => _goToCurrentPosition(attach: true),
-            shape: CircleBorder(),
-            backgroundColor: theme.colorScheme.surface,
-            child: noDataIcon,
+        if (!snapshot.hasData) {
+          return FutureBuilder(
+            future: LocationUtils.checkServiceStatus(),
+            initialData: LocationStatus.disabled,
+            builder: (context, snapshot) {
+              return _buildButtons(snapshot.data!, noDataButton, theme);
+            },
           );
+        } else {
+          var status = snapshot.data! == ServiceStatus.enabled
+              ? LocationStatus.ok
+              : LocationStatus.disabled;
+          return _buildButtons(status, noDataButton, theme);
         }
-        return StreamBuilder(
-          stream: _positionStream,
-          builder: (context, snapshot) {
-            var child = noDataIcon;
-            if (snapshot.hasData) {
-              var position =
-                  LatLng(snapshot.data!.latitude, snapshot.data!.longitude);
-
-              if (ctrl.camera.center == position) {
-                child = Icon(
-                  MingCuteIcons.mgc_aiming_2_fill,
-                  color: theme.colorScheme.primary,
-                  size: 32,
-                );
-              } else {
-                child = Icon(
-                  MingCuteIcons.mgc_aiming_2_line,
-                  color: theme.colorScheme.primary,
-                  size: 32,
-                );
-              }
-            }
-            return FloatingActionButton(
-              onPressed: () => _goToCurrentPosition(attach: true),
-              shape: CircleBorder(),
-              backgroundColor: theme.colorScheme.surface,
-              child: child,
-            );
-          },
-        );
       },
     );
+  }
+
+  Widget _buildButtons(
+      LocationStatus status, Widget onDisabled, ThemeData theme) {
+    if (status == LocationStatus.ok) {
+      Widget child;
+      bool attachDirection = false;
+      if (shouldAlignPosition && shouldAlignDirection) {
+        child = Icon(
+          MingCuteIcons.mgc_compass_3_fill,
+          color: theme.colorScheme.primary,
+          size: 32,
+        );
+      } else if (shouldAlignPosition && !shouldAlignDirection) {
+        child = Icon(
+          MingCuteIcons.mgc_aiming_2_fill,
+          color: theme.colorScheme.primary,
+          size: 32,
+        );
+        attachDirection = true;
+      } else {
+        child = Icon(
+          MingCuteIcons.mgc_aiming_2_line,
+          color: theme.colorScheme.primary,
+          size: 32,
+        );
+      }
+      return FloatingActionButton(
+        onPressed: () => _goToCurrentPosition(
+          attachPosition: true,
+          attachDirection: attachDirection,
+        ),
+        shape: CircleBorder(),
+        backgroundColor: theme.colorScheme.surface,
+        child: child,
+      );
+    } else {
+      shouldAlignPosition = false;
+      return onDisabled;
+    }
   }
 
   Widget _buildMarkerLayer(BuildContext context) {
@@ -246,26 +304,36 @@ class MapPageState extends State<MapPage> {
     );
   }
 
-  void _goToCurrentPosition({bool? attach}) async {
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.always ||
-        permission == LocationPermission.whileInUse) {
-      if (!await Geolocator.isLocationServiceEnabled()) {
-        if (!await l.Location().requestService()) {
-          return;
-        }
-      }
+  /// Moves the map to the current position and attach the position, i.e. the map
+  /// center moves along with the position. If `attachPosition` is `true`,
+  /// `attachDirection` makes the map rotate to follow user heading. Position
+  /// accuracy in low by default, medium if `attachPosition` and high if
+  /// `attachDirection`.
+  void _goToCurrentPosition(
+      {bool? attachPosition, bool? attachDirection}) async {
+    var status = await LocationUtils.askForService();
+    if (status == LocationStatus.accessDenied) {
+      return;
+    }
 
+    try {
+      LocationAccuracy accuracy = LocationAccuracy.low;
+      if (attachPosition == true && attachDirection != true) {
+        accuracy = LocationAccuracy.medium;
+      } else if (attachPosition == true && attachDirection == true) {
+        accuracy = LocationAccuracy.high;
+      }
       Position position = await Geolocator.getCurrentPosition(
-        locationSettings: LocationSettings(
-          accuracy: LocationAccuracy.low,
-        ),
+        locationSettings: LocationSettings(accuracy: accuracy),
       );
+      currentPosition = LatLng(position.latitude, position.longitude);
+      ctrl.move(currentPosition!, currentZoom);
       setState(() {
-        currentPosition = LatLng(position.latitude, position.longitude);
-        ctrl.move(currentPosition!, currentZoom);
-        if (attach == true) {}
+        shouldAlignPosition = attachPosition ?? false;
+        shouldAlignDirection = attachDirection ?? false;
       });
+    } catch (ex) {
+      // TODO: no position service enabled
     }
   }
 

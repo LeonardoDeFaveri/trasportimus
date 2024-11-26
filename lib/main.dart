@@ -39,6 +39,7 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
     PrefsBloc prefsBloc = PrefsBloc(prefs);
+    String localeName = Platform.localeName.substring(0, 2);
 
     return MultiBlocProvider(
       providers: [
@@ -53,9 +54,8 @@ class MyApp extends StatelessWidget {
         title: 'Transportimus',
         theme: Defaults.themeData,
         supportedLocales: L10n.all,
-        locale: Locale(L10n.all.contains(Locale(Platform.localeName))
-            ? Platform.localeName
-            : 'en'),
+        locale:
+            L10n.names.contains(localeName) ? Locale(localeName) : Locale('en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: AnimatedSplashScreen.withScreenFunction(
           splash: Center(
