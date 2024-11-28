@@ -169,25 +169,35 @@ class MapSearchBarState extends State<MapSearchBar> {
       onChanged: (value) => textStream.add(value),
     );
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        searchBar,
-        SizedBox(
-          height: 5,
-        ),
-        SearchHintsViewer(
-          textStream.stream,
-          ctrl,
-          stops,
-          widget.favStops,
-          onTap: (stop) {
-            ctrl.clear();
-            textStream.add("");
-            widget.mapCtrl.move(LatLng(stop.latitude, stop.longitude), 17.5);
-          },
-        ),
-      ],
+    return TapRegion(
+      onTapOutside: (event) {
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.focusedChild?.unfocus();
+        }
+        ctrl.clear();
+        textStream.add("");
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          searchBar,
+          SizedBox(
+            height: 5,
+          ),
+          SearchHintsViewer(
+            textStream.stream,
+            ctrl,
+            stops,
+            widget.favStops,
+            onTap: (stop) {
+              ctrl.clear();
+              textStream.add("");
+              widget.mapCtrl.move(LatLng(stop.latitude, stop.longitude), 17.5);
+            },
+          ),
+        ],
+      ),
     );
   }
 

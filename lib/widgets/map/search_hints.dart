@@ -55,7 +55,7 @@ class SearchHintsViewerState extends State<SearchHintsViewer> {
             color: theme.colorScheme.surface,
           ),
           constraints: BoxConstraints(
-            maxHeight: 300,
+            maxHeight: MediaQuery.sizeOf(context).height * 0.5,
             minHeight: 0,
           ),
           width: double.infinity,
