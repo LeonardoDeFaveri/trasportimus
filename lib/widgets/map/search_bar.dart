@@ -167,10 +167,6 @@ class MapSearchBarState extends State<MapSearchBar> {
       autoFocus: false,
       controller: ctrl,
       onChanged: (value) => textStream.add(value),
-      //onTapOutside: (event) {
-      //  ctrl.clear();
-      //  textStream.add("");
-      //},
     );
 
     return Column(
@@ -180,12 +176,17 @@ class MapSearchBarState extends State<MapSearchBar> {
         SizedBox(
           height: 5,
         ),
-        SearchHintsViewer(textStream.stream, ctrl, stops, widget.favStops,
-            onTap: (stop) {
-          ctrl.clear();
-          textStream.add("");
-          widget.mapCtrl.move(LatLng(stop.latitude, stop.longitude), 17.5);
-        }),
+        SearchHintsViewer(
+          textStream.stream,
+          ctrl,
+          stops,
+          widget.favStops,
+          onTap: (stop) {
+            ctrl.clear();
+            textStream.add("");
+            widget.mapCtrl.move(LatLng(stop.latitude, stop.longitude), 17.5);
+          },
+        ),
       ],
     );
   }

@@ -81,7 +81,10 @@ class SearchHintsViewerState extends State<SearchHintsViewer> {
                   stop.name,
                   overflow: TextOverflow.clip,
                 ),
-                subtitle: Text(subtitle),
+                subtitle: Text(
+                  subtitle,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 trailing: Icon(
                   widget.favStops.contains(stop)
                       ? MingCuteIcons.mgc_heart_fill

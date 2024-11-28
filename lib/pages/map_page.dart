@@ -71,7 +71,7 @@ class MapPageState extends State<MapPage> {
         initialCenter: trentoFsStation,
         initialZoom: initialZoom,
         keepAlive: true,
-        minZoom: 10,
+        minZoom: 8,
         onMapEvent: (event) {
           if (event is MapEventScrollWheelZoom ||
               event is MapEventDoubleTapZoom ||
@@ -98,6 +98,7 @@ class MapPageState extends State<MapPage> {
           userAgentPackageName: 'trasportimus',
           maxNativeZoom: 19,
           minNativeZoom: 1,
+          minZoom: 5,
         ),
         _buildLocationMarkerLayer(context),
         _buildMarkerLayer(context),
@@ -302,11 +303,12 @@ class MapPageState extends State<MapPage> {
             }
             return MarkerClusterLayerWidget(
               options: MarkerClusterLayerOptions(
-                maxClusterRadius: 150,
+                maxClusterRadius: 45,
                 size: const Size(50, 50),
                 alignment: Alignment.center,
                 padding: const EdgeInsets.all(50),
                 markers: markers,
+                markerChildBehavior: true,
                 rotate: true,
                 builder: (context, markers) {
                   return Container(
@@ -356,7 +358,7 @@ class MapPageState extends State<MapPage> {
         locationSettings: LocationSettings(accuracy: accuracy),
       );
       currentPosition = LatLng(position.latitude, position.longitude);
-      ctrl.move(currentPosition!, currentZoom);
+      ctrl.moveAndRotate(currentPosition!, currentZoom, 0);
       setState(() {
         shouldAlignPosition = attachPosition ?? false;
         shouldAlignDirection = attachDirection ?? false;
