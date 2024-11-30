@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:osm_api/model/address.dart';
 
 part 'location.g.dart';
