@@ -6,28 +6,38 @@ part 'address.g.dart';
 @JsonSerializable()
 class Address extends Equatable {
   @JsonKey(name: 'road')
-  final String road;
+  final String? road;
+  @JsonKey(name: 'municipality')
+  final String? municipality;
   @JsonKey(name: 'village')
-  final String village;
+  final String? village;
   @JsonKey(name: 'county')
-  final String county;
+  final String? county;
   @JsonKey(name: 'ISO3166-2-lvl6', fromJson: Address._readCountyCode, toJson: Address._writeCountyCode)
-  final String countyCode;
+  final String? countyCode;
   @JsonKey(name: 'state')
-  final String state;
+  final String? state;
   @JsonKey(name: 'country')
-  final String country;
+  final String? country;
   @JsonKey(name: 'county_code')
-  final String countryCode;
+  final String? countryCode;
 
-  static String _readCountyCode(String value) {
+  static String? _readCountyCode(String? value) {
+    if (value == null) {
+      return null;
+    }
+
     if (value.length >= 5) {
       return value.substring(3);
     }
     return '';
   }
 
-  static String _writeCountyCode(String value) {
+  static String? _writeCountyCode(String? value) {
+    if (value == null) {
+      return null;
+    }
+
     if (value.isNotEmpty) {
       return 'IT-$value';
     }
@@ -35,13 +45,14 @@ class Address extends Equatable {
   }
 
   const Address({
-    required this.road,
-    required this.village,
-    required this.county,
-    required this.countyCode,
-    required this.state,
-    required this.country,
-    required this.countryCode,
+    this.road,
+    this.municipality,
+    this.village,
+    this.county,
+    this.countyCode,
+    this.state,
+    this.country,
+    this.countryCode,
   });
 
   factory Address.fromJson(Map<String, dynamic> json) =>
