@@ -1,7 +1,7 @@
 library osm_api;
 
 import 'package:http/http.dart' as http;
-import 'dart:convert' show utf8, base64, json;
+import 'dart:convert' show json;
 
 import 'package:osm_api/model/location.dart';
 
@@ -19,6 +19,7 @@ class OsmApiClient {
           'addressdetails': '1',
           'accept-language': 'it',
           'countrycodes': 'it',
+          'limit': '10',
           'layer': 'address,poi',
           'q': ''
         };
@@ -28,14 +29,23 @@ class OsmApiClient {
     queryHeaders['q'] = key;
     var uri = Uri.https(baseUrl, '/search', queryHeaders);
 
-    var response = await client.get(uri).catchError((err) => http.Response(err.toString(), 400));
+    var response = await client
+        .get(uri)
+        .catchError((err) => http.Response(err.toString(), 400));
     if (response.statusCode == 200) {
       List<Location> locations = List.empty(growable: true);
       var locationJson = json.decode(response.body) as List<dynamic>;
       for (Map<String, dynamic> location in locationJson) {
         // Filter out non-places. Should look for a better way
         if (location['class'] == 'place') {
-          locations.add(Location.fromJson(location));
+          // Filter out places outside of valid areas
+          var addr = location['address'] ?? {};
+          var state = addr['state'] ?? '';
+          if (state == 'Veneto' ||
+              state == 'Lombardia' ||
+              state == 'Trentino-Alto Adige' || state == '') {
+            locations.add(Location.fromJson(location));
+          }
         }
       }
       return ApiOk(locations);

@@ -6,7 +6,7 @@ import 'package:trasportimus/blocs/transport/transport_bloc.dart';
 import 'package:trasportimus/pages/stop_trips_page.dart';
 import 'package:trasportimus_repository/model/model.dart' as m;
 
-class StopTile extends StatelessWidget {
+final class StopTile extends StatelessWidget {
   final m.Stop stop;
 
   const StopTile(this.stop, {super.key});
@@ -73,11 +73,12 @@ class StopTile extends StatelessWidget {
   }
 }
 
-class StopExpanded extends StatelessWidget {
+final class StopExpanded extends StatelessWidget {
   final m.Stop stop;
   final bool isFavourite;
+  final Function(m.Stop)? onTap;
 
-  const StopExpanded(this.stop, this.isFavourite, {super.key});
+  const StopExpanded(this.stop, this.isFavourite, {this.onTap, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -105,12 +106,16 @@ class StopExpanded extends StatelessWidget {
           )),
       title: Text(
         stop.name,
-        overflow: TextOverflow.clip,
+        overflow: TextOverflow.ellipsis,
       ),
-      subtitle: Text(subtitle),
+      subtitle: Text(
+        subtitle,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
       horizontalTitleGap: 5,
       isThreeLine: false,
-      onTap: () => _goToStopPage(context, stop),
+      onTap: () => onTap == null ? _goToStopPage(context, stop) : onTap!(stop),
     );
   }
 }

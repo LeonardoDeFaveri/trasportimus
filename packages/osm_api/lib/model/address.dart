@@ -13,7 +13,10 @@ class Address extends Equatable {
   final String? village;
   @JsonKey(name: 'county')
   final String? county;
-  @JsonKey(name: 'ISO3166-2-lvl6', fromJson: Address._readCountyCode, toJson: Address._writeCountyCode)
+  @JsonKey(
+      name: 'ISO3166-2-lvl6',
+      fromJson: Address._readCountyCode,
+      toJson: Address._writeCountyCode)
   final String? countyCode;
   @JsonKey(name: 'state')
   final String? state;

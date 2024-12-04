@@ -100,7 +100,7 @@ class RouteTripsPageState extends State<RouteTripsPage> {
           BlocListener<tb.TransportBloc, tb.TransportState>(
             listener: (context2, state) {
               if (state is tb.TransportFetchFailed) {
-                Defaults.showErrorSnackBar(context, state);
+                Defaults.showTrasportimusErrorSnackBar(context, state);
               }
             },
           ),

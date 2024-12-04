@@ -162,7 +162,7 @@ class Defaults {
     iconTheme: const IconThemeData(size: 25),
   );
 
-  static void showErrorSnackBar(
+  static void showTrasportimusErrorSnackBar(
       BuildContext context, TransportFetchFailed state) {
     var theme = Theme.of(context);
     var loc = AppLocalizations.of(context)!;
@@ -182,6 +182,28 @@ class Defaults {
               .copyWith(color: theme.colorScheme.onError),
         )
     };
+    var snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      duration: const Duration(seconds: 20),
+      content: content,
+    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
+  }
+
+  static void showOsmErrorSnackBar(BuildContext context) {
+    var theme = Theme.of(context);
+    var loc = AppLocalizations.of(context)!;
+    var content = AwesomeSnackbarContent(
+      title: loc.noDataTitle,
+      message: loc.noDataErr,
+      contentType: ContentType.failure,
+      messageTextStyle: theme.textTheme.bodyMedium!
+          .copyWith(color: theme.colorScheme.onError),
+    );
     var snackBar = SnackBar(
       elevation: 0,
       behavior: SnackBarBehavior.floating,

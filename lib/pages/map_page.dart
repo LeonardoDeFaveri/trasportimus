@@ -33,7 +33,6 @@ class MapPageState extends State<MapPage> {
   late bool shouldAlignDirection;
   late LatLng? currentPosition;
   late double currentZoom;
-  late List<Stop> stops;
   late Set<Stop> favStops;
 
   @override
@@ -48,7 +47,6 @@ class MapPageState extends State<MapPage> {
     shouldAlignDirection = false;
     currentZoom = initialZoom;
 
-    stops = [];
     favStops = {};
 
     LocationUtils.instance.createStreams().then((value) {
@@ -262,6 +260,7 @@ class MapPageState extends State<MapPage> {
     var theme = Theme.of(context);
 
     return BlocConsumer<pb.PrefsBloc, pb.PrefsState>(
+      bloc: prefsBloc,
       listener: (context, state) {
         if (state is pb.PrefsLoadedStops) {
           setState(() {
@@ -280,8 +279,7 @@ class MapPageState extends State<MapPage> {
           builder: (context, state) {
             List<Marker> markers = [];
             if (state is tb.TransportFetchedStops) {
-              stops = state.stops;
-              for (Stop stop in stops) {
+              for (Stop stop in state.stops) {
                 markers.add(
                   Marker(
                     height: 500,
@@ -364,7 +362,7 @@ class MapPageState extends State<MapPage> {
         shouldAlignDirection = attachDirection ?? false;
       });
     } catch (ex) {
-      // TODO: no position service enabled
+      // Do nothing
     }
   }
 

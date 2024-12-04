@@ -35,6 +35,8 @@ dependencies:
   intl: ^0.19.0
   trasportimus_repository:
     path: packages/trasportimus_repository
+  osm_api:
+    path: packages/osm_api
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   bloc: ^8.1.4
@@ -59,6 +61,7 @@ dependencies:
   flutter_compass: ^0.8.1
   location: ^7.0.1
   flutter_map_marker_cluster: ^1.4.0
+  fuzzywuzzy: ^1.2.0
 
 dev_dependencies:
   flutter_launcher_icons: "^0.14.1"

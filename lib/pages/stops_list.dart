@@ -4,6 +4,7 @@ import 'package:choice/choice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:trasportimus/blocs/prefs/prefs_bloc.dart' as pb;
 import 'package:trasportimus/blocs/transport/transport_bloc.dart' as tb;
@@ -63,21 +64,23 @@ class StopsListState extends State<StopsList> {
       icon: const Icon(MingCuteIcons.mgc_close_line),
     );
     var searchBar = SearchBar(
-      shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(borderRadius: Defaults.borderRadius)),
-      constraints: BoxConstraints(maxHeight: 50),
-      autoFocus: true,
-      trailing: [backButton],
-      hintText: loc.stopSearchHint,
-      onChanged: (value) => setState(() {
-        if (allStops == null) return;
-        foundStops = allStops!
-            .where(
-              (stop) => stop.name.toLowerCase().contains(value.toLowerCase()),
-            )
-            .toList();
-      }),
-    );
+        shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: Defaults.borderRadius)),
+        constraints: BoxConstraints(maxHeight: 50),
+        autoFocus: true,
+        trailing: [backButton],
+        hintText: loc.stopSearchHint,
+        onChanged: (value) {
+          if (allStops == null || value.isEmpty) return;
+          var found = extractAllSorted(
+            query: value,
+            choices: allStops!,
+            getter: (stop) => stop.name,
+            cutoff: 40,
+          );
+          foundStops = found.map((el) => allStops![el.index]).toList();
+          setState(() {});
+        });
     var actions = [
       IconButton(
         onPressed: () => setState(() {
@@ -114,7 +117,7 @@ class StopsListState extends State<StopsList> {
                   foundStops = allStops!;
                 });
               } else if (state is tb.TransportFetchFailed) {
-                Defaults.showErrorSnackBar(context, state);
+                Defaults.showTrasportimusErrorSnackBar(context, state);
               }
             },
           ),

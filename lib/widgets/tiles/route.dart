@@ -6,7 +6,7 @@ import 'package:trasportimus/blocs/transport/transport_bloc.dart';
 import 'package:trasportimus/pages/route_trips_page.dart';
 import 'package:trasportimus_repository/model/model.dart' as model;
 
-class RouteTile extends StatelessWidget {
+final class RouteTile extends StatelessWidget {
   final model.Route route;
   final DateTime? refTime;
   final bool isClickable;
@@ -76,7 +76,7 @@ class RouteTile extends StatelessWidget {
   }
 }
 
-class RouteExpanded extends StatelessWidget {
+final class RouteExpanded extends StatelessWidget {
   final model.Route route;
   final bool isFavourite;
   final DateTime? refTime;

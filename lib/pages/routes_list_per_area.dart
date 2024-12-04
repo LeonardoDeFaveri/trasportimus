@@ -70,7 +70,7 @@ class RoutesListState extends State<RoutesList> {
         bloc: bloc,
         listener: (context2, state) {
           if (state is TransportFetchFailed) {
-            Defaults.showErrorSnackBar(context, state);
+            Defaults.showTrasportimusErrorSnackBar(context, state);
           }
         },
         buildWhen: (previous, current) => shouldBuild,
