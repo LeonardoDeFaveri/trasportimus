@@ -1,16 +1,21 @@
 # trasportimus
+An app for viewing Trentino Trasporti busses, trains and cableways
+info.
 
-A new Flutter project.
+![Home page](/../screenshots/screenshots/home.png)
 
-## Getting Started
+![Area picker](/../screenshots/screenshots/pick-area.png)
 
-This project is a starting point for a Flutter application.
+![Area selector](/../screenshots/screenshots/route-list-per-area.png)
 
-A few resources to get you started if this is your first Flutter project:
+![Route timeline](/../screenshots/screenshots/route-timeline.png)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+![Stop list](/../screenshots/screenshots/stop-list.png)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![Stop info](/../screenshots/screenshots/stop-info.png)
+
+![Map page](/../screenshots/screenshots/map.png)
+
+![Map page search](/../screenshots/screenshots/map-search.png)
+
+![Map page route](/../screenshots/screenshots/map-route.png)
