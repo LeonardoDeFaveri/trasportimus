@@ -17,6 +17,7 @@ const Duration negOffset = Duration(hours: 1);
 
 class TripTimelineHeader extends StatelessWidget {
   final Trip? trip;
+  final Trip? pred;
   final r.Route? route;
   final bool isFavourite;
   final void Function() reloadData;
@@ -36,6 +37,7 @@ class TripTimelineHeader extends StatelessWidget {
     required this.direction,
     bool? allowRouteNavigation,
     bool? disableDirection,
+    this.pred,
     super.key,
   })  : route = null,
         offTime = refTime.add(offset),
@@ -53,6 +55,7 @@ class TripTimelineHeader extends StatelessWidget {
     bool? disableDirection,
     super.key,
   })  : trip = null,
+        pred = null,
         offTime = refTime.add(offset),
         allowRouteNavigation = allowRouteNavigation ?? false,
         disableDirection = disableDirection ?? false;
@@ -121,13 +124,13 @@ class TripTimelineHeader extends StatelessWidget {
     );
   }
 
-  Text _buildStatusLabel(BuildContext context) {
+  Text _buildStatusLabel(BuildContext context, Trip? pred) {
     AppLocalizations loc = AppLocalizations.of(context)!;
 
     String status;
-    if (trip!.lastUpdate == null) {
+    if (trip!.lastUpdate == null && pred == null) {
       status = loc.noRealTimeData;
-    } else {
+    } else if (trip!.lastUpdate != null) {
       if (trip!.lastSequenceDetection == 0 && DateTime.now().isAfter(offTime)) {
         status = loc.yetToStart;
       } else if (trip!.lastSequenceDetection == trip!.stopTimes.length) {
@@ -139,6 +142,18 @@ class TripTimelineHeader extends StatelessWidget {
           status = loc.early(-1 * trip!.delay.round());
         } else {
           status = loc.late(trip!.delay.round());
+        }
+      }
+    } else {
+      if (pred!.lastUpdate == null) {
+        status = loc.noRealTimeData;
+      } else {
+        // Time offset between termination of pred and beginning of current trip
+        int delay = _getDelay(pred);
+        if (delay > 0) {
+          status = loc.late(delay);
+        } else {
+          status = loc.yetToStart;
         }
       }
     }
@@ -153,6 +168,13 @@ class TripTimelineHeader extends StatelessWidget {
     );
   }
 
+  int _getDelay(Trip pred) {
+    var offset = trip!.stopTimes.first.arrivalTime
+        .difference(pred.stopTimes.last.arrivalTime);
+    var delay = pred.delay.round() - offset.inMinutes;
+    return delay;
+  }
+
   Row _buildStatusRow(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -164,8 +186,8 @@ class TripTimelineHeader extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildStatusLabel(context),
-                _buildLastUpdateLabel(context),
+                _buildStatusLabel(context, pred),
+                _buildLastUpdateLabel(context, pred),
               ],
             ),
           ),
@@ -174,7 +196,7 @@ class TripTimelineHeader extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            _buildStatusIndicator(context),
+            _buildStatusIndicator(context, pred),
             IconButton(
               onPressed: reloadData,
               icon: Icon(MingCuteIcons.mgc_refresh_1_line),
@@ -185,12 +207,15 @@ class TripTimelineHeader extends StatelessWidget {
     );
   }
 
-  Text _buildLastUpdateLabel(BuildContext context) {
+  Text _buildLastUpdateLabel(BuildContext context, Trip? pred) {
     AppLocalizations loc = AppLocalizations.of(context)!;
     String text = loc.noReading;
     if (trip!.lastUpdate != null) {
       text = loc.lastReading(format('{:0>2}:{:0>2}', trip!.lastUpdate!.hour + 1,
           trip!.lastUpdate!.minute));
+    } else if (pred != null && pred.lastUpdate != null) {
+      text = loc.lastReading(format(
+          '{:0>2}:{:0>2}', pred.lastUpdate!.hour + 1, pred.lastUpdate!.minute));
     }
     return Text(
       text,
@@ -198,14 +223,18 @@ class TripTimelineHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusIndicator(BuildContext context) {
+  Widget _buildStatusIndicator(BuildContext context, Trip? pred) {
     AppLocalizations loc = AppLocalizations.of(context)!;
     IconData icon = MingCuteIcons.mgc_alert_diamond_fill;
     Color color = Colors.red;
+    String text = loc.noReadingAlert;
 
     if (trip!.lastUpdate != null) {
       icon = MingCuteIcons.mgc_check_fill;
       color = Colors.lightGreen;
+    } else if (pred != null && pred.lastUpdate != null) {
+      color = Colors.orange;
+      text = loc.predictedReadingAlert;
     }
 
     Widget pulser = Container(
@@ -225,7 +254,7 @@ class TripTimelineHeader extends StatelessWidget {
         listBuilder: (_, __) => Padding(
           padding: const EdgeInsets.all(10.0),
           child: Text(
-            loc.noReadingAlert,
+            text,
             textAlign: TextAlign.justify,
             style: Theme.of(context).textTheme.bodyMedium,
           ),

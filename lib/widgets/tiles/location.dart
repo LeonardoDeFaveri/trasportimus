@@ -40,9 +40,9 @@ final class LocationTile extends StatelessWidget {
 
 final class LocationExpanded extends StatelessWidget {
   final Location location;
-  final Function(double, double) onTap;
+  final Function(Location) onTap;
 
-  const LocationExpanded(this.location, this.onTap, {super.key});
+  const LocationExpanded(this.location, {required this.onTap, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +83,7 @@ final class LocationExpanded extends StatelessWidget {
       ),
       horizontalTitleGap: 5,
       isThreeLine: true,
-      onTap: () => onTap(location.lat, location.lon),
+      onTap: () => onTap(location),
     );
   }
 }

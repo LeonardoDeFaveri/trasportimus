@@ -41,7 +41,7 @@ class RoutesListState extends State<RoutesList> {
       m.Area.cableway => loc.cableways,
       m.Area.railway => loc.railways,
       m.Area.trento => loc.urbanRoutes('Trento'),
-      m.Area.altoGarda => loc.urbanRoutes('Alto Gardo'),
+      m.Area.altoGarda => loc.urbanRoutes('Alto Garda'),
       m.Area.pergine => loc.urbanRoutes('Pergine'),
       m.Area.rovereto => loc.urbanRoutes('Rovereto'),
       _ => loc.extraurbanRoutes(area.id)

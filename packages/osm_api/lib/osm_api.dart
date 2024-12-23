@@ -43,7 +43,8 @@ class OsmApiClient {
           var state = addr['state'] ?? '';
           if (state == 'Veneto' ||
               state == 'Lombardia' ||
-              state == 'Trentino-Alto Adige' || state == '') {
+              state == 'Trentino-Alto Adige' ||
+              state == '') {
             locations.add(Location.fromJson(location));
           }
         }

@@ -1,15 +1,19 @@
 import 'dart:async';
 
+import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:format/format.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:pulsator/pulsator.dart';
 import 'package:trasportimus/blocs/osm/osm_bloc.dart';
 import 'package:trasportimus/blocs/transport/transport_bloc.dart';
 import 'package:trasportimus/utils.dart';
+import 'package:trasportimus/widgets/map/hints_type.dart';
+import 'package:trasportimus/widgets/map/route_picker.dart';
 import 'package:trasportimus/widgets/map/search_hints.dart';
 import 'package:trasportimus_repository/model/model.dart';
 
@@ -33,8 +37,12 @@ class MapSearchBarState extends State<MapSearchBar> {
   late Status fetchingOsmDataStatus;
   late Status fetchingStopsDataStatus;
   late StreamController<String> textStream;
-  late SearchController ctrl;
+  late SearchController searchCtrl;
+  late List<SearchController> routeCtrls;
+  late int selectedCtrl;
   late List<Stop> stops;
+  late DateTime refTime;
+  late bool enabled;
 
   @override
   void initState() {
@@ -43,9 +51,13 @@ class MapSearchBarState extends State<MapSearchBar> {
     fetchingOsmDataStatus = Status.ok;
     fetchingStopsDataStatus = Status.pending;
     textStream = StreamController.broadcast();
-    ctrl = SearchController();
+    searchCtrl = SearchController();
+    routeCtrls = [SearchController(), SearchController()];
+    selectedCtrl = 0;
     osmBloc = OsmBloc();
     stops = [];
+    refTime = DateTime.now();
+    enabled = false;
   }
 
   @override
@@ -62,11 +74,12 @@ class MapSearchBarState extends State<MapSearchBar> {
               setState(() {
                 fetchingOsmDataStatus = Status.pending;
               });
-            } else if (state is OsmData && state.key == ctrl.text) {
+            } else if (state is OsmData && state.key == searchCtrl.text) {
               setState(() {
                 fetchingOsmDataStatus = Status.ok;
               });
-            } else if (state is OsmFetchFailed && state.key == ctrl.text) {
+            } else if (state is OsmFetchFailed &&
+                state.key == searchCtrl.text) {
               setState(() {
                 fetchingOsmDataStatus = Status.failed;
               });
@@ -189,31 +202,10 @@ class MapSearchBarState extends State<MapSearchBar> {
   }
 
   Widget _buildSimpleSearchBar(BuildContext context, ThemeData theme) {
-    Widget? indicator;
-    if (fetchingOsmDataStatus == Status.pending) {
-      indicator = Container(
-        margin: const EdgeInsets.only(left: 10),
-        child: const PulseIcon(
-          icon: MingCuteIcons.mgc_search_3_line,
-          pulseColor: Colors.lightGreen,
-          iconSize: 18,
-          pulseSize: 45,
-        ),
-      );
-    } else if (fetchingOsmDataStatus == Status.failed) {
-      indicator = Container(
-        margin: const EdgeInsets.only(left: 10),
-        child: const PulseIcon(
-          icon: MingCuteIcons.mgc_alert_diamond_line,
-          pulseColor: Colors.red,
-          iconSize: 18,
-          pulseSize: 45,
-        ),
-      );
-    }
+    Widget? indicator = buildSearchIndicator();
 
     List<Widget> trailing = [];
-    if (indicator != null && ctrl.text.isNotEmpty) {
+    if (indicator != null && searchCtrl.text.isNotEmpty) {
       trailing.add(indicator);
     }
     trailing.add(
@@ -237,13 +229,8 @@ class MapSearchBarState extends State<MapSearchBar> {
       trailing: trailing,
       hintText: loc.mapSearchHint,
       autoFocus: false,
-      controller: ctrl,
-      onChanged: (value) {
-        if (value.length >= 3) {
-          textStream.add(value);
-          osmBloc.add(Search(value));
-        }
-      },
+      controller: searchCtrl,
+      onChanged: searchKey,
     );
 
     return TapRegion(
@@ -252,7 +239,7 @@ class MapSearchBarState extends State<MapSearchBar> {
         if (!currentFocus.hasPrimaryFocus) {
           currentFocus.focusedChild?.unfocus();
         }
-        ctrl.clear();
+        searchCtrl.clear();
         textStream.add("");
       },
       child: Column(
@@ -265,11 +252,19 @@ class MapSearchBarState extends State<MapSearchBar> {
           SearchHintsViewer(
             textStream.stream,
             osmBloc,
-            ctrl,
+            searchCtrl,
             stops,
             widget.favStops,
-            onTap: (lat, lon) {
-              ctrl.clear();
+            onTap: (hint) {
+              double lat = 0, lon = 0;
+              if (hint is StopHint) {
+                lat = hint.stop.latitude;
+                lon = hint.stop.longitude;
+              } else if (hint is LocationHint) {
+                lat = hint.location.lat;
+                lon = hint.location.lon;
+              }
+              searchCtrl.clear();
               textStream.add("");
               widget.mapCtrl.move(LatLng(lat, lon), 17.5);
             },
@@ -277,6 +272,32 @@ class MapSearchBarState extends State<MapSearchBar> {
         ],
       ),
     );
+  }
+
+  Widget? buildSearchIndicator() {
+    Widget? indicator;
+    if (fetchingOsmDataStatus == Status.pending) {
+      indicator = Container(
+        margin: const EdgeInsets.only(left: 10),
+        child: const PulseIcon(
+          icon: MingCuteIcons.mgc_search_3_line,
+          pulseColor: Colors.lightGreen,
+          iconSize: 18,
+          pulseSize: 45,
+        ),
+      );
+    } else if (fetchingOsmDataStatus == Status.failed) {
+      indicator = Container(
+        margin: const EdgeInsets.only(left: 10),
+        child: const PulseIcon(
+          icon: MingCuteIcons.mgc_alert_diamond_line,
+          pulseColor: Colors.red,
+          iconSize: 18,
+          pulseSize: 45,
+        ),
+      );
+    }
+    return indicator;
   }
 
   Widget _buildRouteBar(BuildContext context, ThemeData theme) {
@@ -287,18 +308,185 @@ class MapSearchBarState extends State<MapSearchBar> {
       icon: const Icon(MingCuteIcons.mgc_arrow_left_line),
     );
 
-    return Container(
-      constraints: BoxConstraints(maxHeight: 100),
-      decoration: BoxDecoration(
-          boxShadow: Defaults.shadows,
-          borderRadius: Defaults.borderRadius,
-          color: theme.colorScheme.surface),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return TapRegion(
+      onTapOutside: (event) {
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.focusedChild?.unfocus();
+        }
+        routeCtrls[0].clear();
+        routeCtrls[1].clear();
+        textStream.add("");
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          backButton,
+          Container(
+            constraints: BoxConstraints(
+              maxHeight: 500,
+            ),
+            decoration: BoxDecoration(
+              boxShadow: Defaults.shadows,
+              borderRadius: Defaults.borderRadius,
+              color: theme.colorScheme.surface,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5.0),
+                      child: backButton,
+                    ),
+                    Expanded(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: RoutePicker(
+                              [loc.routeStart, loc.routeEnd],
+                              routeCtrls,
+                              onTap: (index) {
+                                setState(() {
+                                  selectedCtrl = index;
+                                });
+                              },
+                              onChanged: searchKey,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(right: 8.0),
+                            child: IconButton(
+                              onPressed: reverseRoute,
+                              icon: Icon(MingCuteIcons.mgc_transfer_2_line),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () => showDatePicker(
+                        context: context,
+                        firstDate: DateTime(1900),
+                        initialDate: refTime,
+                        lastDate: DateTime(2100),
+                      ).then((DateTime? date) async {
+                        if (date != null) {
+                          final time = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.fromDateTime(refTime),
+                            builder: (context, child) {
+                              return MediaQuery(
+                                data: MediaQuery.of(context)
+                                    .copyWith(alwaysUse24HourFormat: true),
+                                child: child!,
+                              );
+                            },
+                          );
+                          return DateTimeField.combine(date, time);
+                        } else {
+                          return refTime;
+                        }
+                      }).then(
+                        (value) {
+                          if (value != refTime) {
+                            setState(() {
+                              refTime = value;
+                            });
+                          }
+                        },
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(left: 12.0, right: 8.0),
+                            child:
+                                Icon(MingCuteIcons.mgc_calendar_time_add_line),
+                          ),
+                          Text(
+                            format('{:0>2}/{:0>2} {:0>2}:{:0>2}', refTime.day,
+                                refTime.month, refTime.hour, refTime.minute),
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0, bottom: 5.0),
+                      child: ElevatedButton(
+                          style: ButtonStyle(
+                            shape: WidgetStatePropertyAll(
+                                RoundedRectangleBorder(
+                                    borderRadius: Defaults.borderRadius)),
+                            backgroundColor: WidgetStatePropertyAll(
+                                theme.colorScheme.primary),
+                            foregroundColor:
+                                WidgetStateProperty.resolveWith<Color>(
+                              (states) {
+                                if (states.contains(WidgetState.disabled)) {
+                                  return theme.colorScheme.onPrimary
+                                      .withAlpha(200);
+                                } else {
+                                  return theme.colorScheme.onPrimary;
+                                }
+                              },
+                            ),
+                          ),
+                          onPressed: enabled ? () => () : null,
+                          child: Text(loc.routePlan)),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          SearchHintsViewer(
+            textStream.stream,
+            osmBloc,
+            routeCtrls[selectedCtrl],
+            stops,
+            widget.favStops,
+            onTap: (hint) {
+              var ctrl = routeCtrls[selectedCtrl];
+              if (hint is YourPositionHint) {
+                ctrl.text = loc.yourPosition;
+              } else if (hint is StopHint) {
+                ctrl.text = hint.stop.name;
+              } else if (hint is LocationHint) {
+                ctrl.text = hint.location.name;
+              }
+              textStream.add("");
+            },
+            showCurrentPosition: true,
+          )
         ],
       ),
     );
+  }
+
+  void reverseRoute() {
+    setState(() {
+      routeCtrls = routeCtrls.reversed.toList();
+    });
+  }
+
+  void searchKey(String key) {
+    if (key.length >= 3) {
+      textStream.add(key);
+      osmBloc.add(Search(key));
+    }
   }
 }

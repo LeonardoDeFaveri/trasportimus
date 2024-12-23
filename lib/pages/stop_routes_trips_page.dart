@@ -166,9 +166,18 @@ class RouteTripsPageForStopState extends State<RouteTripsPageForStop> {
                               int stopSeq =
                                   getStopSt(trip, widget.stop, refTime)
                                       .stopSequence;
+                              int? predIndex = _getPredTripIndex(trip);
+                              m.Trip? pred;
+                              if (predIndex != null) {
+                                pred = trips[predIndex];
+                                if (pred.lastUpdate == null || pred.lastSequenceDetection == pred.stopTimes.length) {
+                                  pred = null;
+                                }
+                              }
 
                               var tripTimelineHeader = TripTimelineHeader(
                                 trip: trip,
+                                pred: pred,
                                 isFavourite: favRoutes.contains(trip.route),
                                 refTime: refTime,
                                 direction: trip.direction,
@@ -189,6 +198,10 @@ class RouteTripsPageForStopState extends State<RouteTripsPageForStop> {
                               );
                               var tripTimeline = TripTimeline(
                                 trip: trip,
+                                pred: pred,
+                                goToPred: predIndex != null
+                                    ? () => pageCtrl.jumpToPage(predIndex)
+                                    : null,
                                 onPressed: (st) => _goToStopPage(context, st),
                                 itemBuilder: (context, st) => Text(
                                   st.stop.name,
@@ -301,5 +314,17 @@ class RouteTripsPageForStopState extends State<RouteTripsPageForStop> {
       }
     }
     return trip.stopTimes.length;
+  }
+
+  int? _getPredTripIndex(m.Trip trip) {
+    var index = trips.lastIndexWhere((t) {
+      return (t.direction != trip.direction) &&
+          t.stopTimes.last.arrivalTime
+              .isBefore(trip.stopTimes.first.arrivalTime);
+    });
+    if (index >= 0) {
+      return index;
+    }
+    return null;
   }
 }

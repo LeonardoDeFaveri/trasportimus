@@ -94,7 +94,8 @@
             }
         }
     },
-    "noReadingAlert": "Line progress is solely based on expected arrival time at stops. Delays are not considered.",
+    "noReadingAlert": "Trip progress is solely based on expected arrival time at stops. Delays are not considered. ",
+    "predictedReadingAlert": "Real-time info for this trip are not currently available. This might be because another trip has to end its journey for this one to start. An hypothesis on this has been made and informations shown here are highly speculative, so use them with care.",
     "noReadingAlertTitle": "Be careful",
     "directionChoice": "Pick a direction",
     "bothDirections": "Both",
@@ -135,5 +136,10 @@
 
     "mapSearchHint": "Look for a location",
     "mapStopsLoading": "Loading stops data",
-    "mapStopsLoadingFailed": "No stop data"
+    "mapStopsLoadingFailed": "No stop data",
+
+    "routeStart": "Pick a starting point",
+    "routeEnd": "Pick a destination point",
+    "yourPosition": "Your position",
+    "routePlan": "Plan your trip"
 }

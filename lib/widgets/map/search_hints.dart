@@ -5,7 +5,9 @@ import 'package:osm_api/model/location.dart';
 import 'package:trasportimus/blocs/osm/osm_bloc.dart';
 import 'package:trasportimus/blocs/prefs/prefs_bloc.dart';
 import 'package:trasportimus/utils.dart';
+import 'package:trasportimus/widgets/map/hints_type.dart';
 import 'package:trasportimus/widgets/tiles/location.dart';
+import 'package:trasportimus/widgets/tiles/position.dart';
 import 'package:trasportimus/widgets/tiles/stop.dart';
 import 'package:trasportimus_repository/model/stop.dart';
 
@@ -16,9 +18,10 @@ class SearchHintsViewer extends StatefulWidget {
   final bool showCurrentPosition;
   final List<Stop> stops;
   final Set<Stop> favStops;
-  final Function(double, double) onTap;
+  final Function(HintType) onTap;
 
-  const SearchHintsViewer(this.texts, this.osmBloc, this.ctrl, this.stops, this.favStops,
+  const SearchHintsViewer(
+      this.texts, this.osmBloc, this.ctrl, this.stops, this.favStops,
       {required this.onTap, bool? showCurrentPosition, super.key})
       : showCurrentPosition = showCurrentPosition ?? false;
 
@@ -68,15 +71,19 @@ class SearchHintsViewerState extends State<SearchHintsViewer> {
         child: StreamBuilder(
           stream: widget.texts,
           builder: (context, snapshot) {
-            if ((snapshot.data ?? "").isEmpty) {
-              key = "";
-              return Container();
+            List<Object> all = [];
+            if (widget.showCurrentPosition) {
+              all.add(YourPosition());
             }
 
-            key = snapshot.data!;
-            var filteredStops = _filterStops(snapshot.data!);
-            List<Object> all = List.from(filteredStops, growable: true);
-            all.addAll(locations);
+            if ((snapshot.data ?? "").isNotEmpty) {
+              key = snapshot.data!;
+              var filteredStops = _filterStops(snapshot.data!);
+              all.addAll(filteredStops);
+              all.addAll(locations);
+            } else {
+              key = "";
+            }
 
             if (all.isEmpty) {
               return Container();
@@ -96,7 +103,7 @@ class SearchHintsViewerState extends State<SearchHintsViewer> {
               child: ListView.builder(
                 itemCount: all.length,
                 shrinkWrap: true,
-                padding: EdgeInsets.only(bottom: 12.0, right: 8.0),
+                padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 0.0),
                 itemExtent: 60,
                 itemBuilder: (context, index) {
                   var el = all[index];
@@ -105,11 +112,18 @@ class SearchHintsViewerState extends State<SearchHintsViewer> {
                     return StopExpanded(
                       el,
                       widget.favStops.contains(el),
-                      onTap: (stop) =>
-                          widget.onTap(stop.latitude, stop.longitude),
+                      onTap: (stop) => widget.onTap(StopHint(stop)),
                     );
+                  } else if (el is YourPosition) {
+                    return YourPositionExpanded(
+                        onTap: () => widget.onTap(YourPositionHint()));
                   } else {
-                    return LocationExpanded(el as Location, widget.onTap);
+                    return LocationExpanded(
+                      el as Location,
+                      onTap: (location) {
+                        widget.onTap(LocationHint(location));
+                      },
+                    );
                   }
                 },
               ),
@@ -141,3 +155,5 @@ class SearchHintsViewerState extends State<SearchHintsViewer> {
     return found;
   }
 }
+
+final class YourPosition {}

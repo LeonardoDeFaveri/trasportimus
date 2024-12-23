@@ -31,6 +31,7 @@
     "lastReading": "Ultimo rilevamento alle {time}",
     "noReadingAlert": "Lo stato di avanzamento della corsa è basato unicamente sull'orario previsto. Ritardi ed anticipi non sono considerati.",
     "noReadingAlertTitle": "Occhio",
+    "predictedReadingAlert": "Lo stato della corsa non è disponibile. Può essere che un'altra corsa debba terminare prima che questa possa iniziare. Le informazioni qui mostrate sono frutto di una stima e potrebbero quindi essere errate.",
     "directionChoice": "Filtra per direzione",
     "bothDirections": "Entrambe",
     "forwardOnly": "Andata",
@@ -55,5 +56,10 @@
 
     "mapSearchHint": "Cerca una località",
     "mapStopsLoading": "Sto recuperando le fermate",
-    "mapStopsLoadingFailed": "Nessuna fermata trovata"
+    "mapStopsLoadingFailed": "Nessuna fermata trovata",
+
+    "routeStart": "Scegli un punto di partenza",
+    "routeEnd": "Scegli una destinazione",
+    "yourPosition": "La tua position",
+    "routePlan": "Pianifica"
 }

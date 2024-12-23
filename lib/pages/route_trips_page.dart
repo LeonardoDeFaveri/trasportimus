@@ -163,9 +163,18 @@ class RouteTripsPageState extends State<RouteTripsPage> {
                             itemBuilder: (context, index) {
                               m.Trip trip = trips[index];
                               int lastSeq = _getLastStopSeq(trip);
+                              int? predIndex = _getPredTripIndex(trip);
+                              m.Trip? pred;
+                              if (predIndex != null) {
+                                pred = trips[predIndex];
+                                if (pred.lastUpdate == null || pred.lastSequenceDetection == pred.stopTimes.length) {
+                                  pred = null;
+                                }
+                              }
 
                               var tripTimelineHeader = TripTimelineHeader(
                                 trip: trip,
+                                pred: pred,
                                 isFavourite: isFavourite,
                                 refTime: refTime,
                                 direction: direction,
@@ -186,6 +195,10 @@ class RouteTripsPageState extends State<RouteTripsPage> {
                               );
                               var tripTimeline = TripTimeline(
                                 trip: trip,
+                                pred: pred,
+                                goToPred: predIndex != null
+                                    ? () => pageCtrl.jumpToPage(predIndex)
+                                    : null,
                                 onPressed: (st) => _goToStopPage(context, st),
                                 itemBuilder: (context, st) => Text(
                                   st.stop.name,
@@ -319,5 +332,17 @@ class RouteTripsPageState extends State<RouteTripsPage> {
       }
     }
     return trip.stopTimes.length;
+  }
+
+  int? _getPredTripIndex(m.Trip trip) {
+    var index = trips.lastIndexWhere((t) {
+      return (t.direction != trip.direction) &&
+          t.stopTimes.last.arrivalTime
+              .isBefore(trip.stopTimes.first.arrivalTime);
+    });
+    if (index >= 0) {
+      return index;
+    }
+    return null;
   }
 }
