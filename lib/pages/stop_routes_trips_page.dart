@@ -170,7 +170,9 @@ class RouteTripsPageForStopState extends State<RouteTripsPageForStop> {
                               m.Trip? pred;
                               if (predIndex != null) {
                                 pred = trips[predIndex];
-                                if (pred.lastUpdate == null || pred.lastSequenceDetection == pred.stopTimes.length) {
+                                if (pred.lastUpdate == null ||
+                                    pred.lastSequenceDetection ==
+                                        pred.stopTimes.length) {
                                   pred = null;
                                 }
                               }
@@ -318,7 +320,9 @@ class RouteTripsPageForStopState extends State<RouteTripsPageForStop> {
 
   int? _getPredTripIndex(m.Trip trip) {
     var index = trips.lastIndexWhere((t) {
-      return (t.direction != trip.direction) &&
+      return (t.direction != trip.direction ||
+              t.stopTimes.first.stop.id == t.stopTimes.last.stop.id) &&
+          t.route.id == trip.route.id &&
           t.stopTimes.last.arrivalTime
               .isBefore(trip.stopTimes.first.arrivalTime);
     });

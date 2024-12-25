@@ -61,11 +61,10 @@ class TripTimeline extends StatelessWidget {
           margin: EdgeInsets.symmetric(horizontal: 8),
           padding: EdgeInsets.symmetric(horizontal: 8),
           decoration: BoxDecoration(
-            boxShadow: Defaults.shadows,
-            borderRadius: Defaults.borderRadius,
-            border: Border.all(color: Colors.orange, width: 1.5),
-            color: Colors.white
-          ),
+              boxShadow: Defaults.shadows,
+              borderRadius: Defaults.borderRadius,
+              border: Border.all(color: Colors.orange, width: 1.5),
+              color: Colors.white),
           //color: Colors.orange.withAlpha(50),
           child: _buildPredTimeline(theme),
         ),
@@ -262,7 +261,7 @@ class TripTimeline extends StatelessWidget {
               st = pred!.stopTimes.last;
               child = itemBuilder(context2, st);
             }
-      
+
             return Container(
               decoration: BoxDecoration(
                 border: Border(
