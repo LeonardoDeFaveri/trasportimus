@@ -2,6 +2,7 @@ library trasportimus_repository;
 
 import 'dart:collection';
 
+import 'package:latlong2/latlong.dart';
 import 'package:trasportimus_repository/model/model.dart';
 import 'package:trentino_trasporti_api/trentino_trasporti_api.dart';
 import 'package:trentino_trasporti_api/model/model.dart' as m;
@@ -54,7 +55,7 @@ class TrasportimusRepository {
   Future<Result<List<Route>>> getRoutesForArea(Area area,
       {int? retryFor}) async {
     Result<List<Route>> result = await getAllRoutes(retryFor: retryFor);
-    if (result is ApiErr) return result;
+    if (result is Err) return result;
     List<Route> routes = (result as Ok<List<Route>>).result;
     routes.removeWhere((route) => route.area != area);
     return Ok(routes);
@@ -192,8 +193,27 @@ class TrasportimusRepository {
     return repoResult;
   }
 
-  Future<Result<Trip>> getTripDetails(String tripId, {int? retryFor}) async {
+  Future<Result<Trip>> getTripDetails(String tripId,
+      {int? retryFor, bool? forceRefresh}) async {
     Result<Trip> repoResult;
+
+    // Fills local stop map
+    if (_stops == null || forceRefresh == true) {
+      Result<List<Stop>> res = await getAllStops(forceRefresh: forceRefresh);
+      if (res is Err<List<Stop>>) {
+        repoResult = Err<Trip>(res.errorType);
+        return repoResult;
+      }
+    }
+
+    // Fills local route map
+    if (_routes == null || forceRefresh == true) {
+      Result<List<Route>> res = await getAllRoutes(forceRefresh: forceRefresh);
+      if (res is Err<List<Route>>) {
+        repoResult = Err<Trip>(res.errorType);
+        return repoResult;
+      }
+    }
 
     ApiResult<m.Trip> apiResult = await _fetchTripDetailsUntil(
       tripId,
@@ -206,6 +226,54 @@ class TrasportimusRepository {
         repoResult = Ok(Trip.fromApiTrip(result, _stops!, _routes!));
       default:
         ApiErr<m.Trip> err = apiResult as ApiErr<m.Trip>;
+        if (err.mayRetry) {
+          repoResult = Err(ErrorType.tryAgain);
+        } else {
+          repoResult = Err(ErrorType.serviceunreachable);
+        }
+    }
+    return repoResult;
+  }
+
+  Future<Result<DirectionInfo>> getDirectionInfo(LatLng from, LatLng to,
+      {String? lang, int? retryFor}) async {
+    Result<DirectionInfo> repoResult;
+
+    ApiResult<m.DirectionInfo> apiResult = await _fetchDirectionInfoUntil(
+      from,
+      to,
+      lang ?? 'it',
+      retryFor ?? _retryFor,
+    );
+
+    switch (apiResult.runtimeType) {
+      case const (ApiOk<m.DirectionInfo>):
+        m.DirectionInfo result = (apiResult as ApiOk<m.DirectionInfo>).result;
+        Map<int, List<Trip?>> trips = {};
+        for (var e in result.ways.indexed) {
+          List<Trip?> wayTrips = [];
+          for (var step in e.$2.steps) {
+            if (step.travelMode is m.Transit) {
+              var mode = step.travelMode as m.Transit;
+              if (mode.tripId != null) {
+                var trip = await getTripDetails(mode.tripId!);
+                if (trip is Ok<Trip>) {
+                  wayTrips.add(trip.result);
+                } else {
+                  wayTrips.add(null);
+                }
+              } else {
+                wayTrips.add(null);
+              }
+            } else {
+              wayTrips.add(null);
+            }
+          }
+          trips[e.$1] = wayTrips;
+        }
+        repoResult = Ok(DirectionInfo.fromApiDirectionInfo(result, trips));
+      default:
+        ApiErr<m.DirectionInfo> err = apiResult as ApiErr<m.DirectionInfo>;
         if (err.mayRetry) {
           repoResult = Err(ErrorType.tryAgain);
         } else {
@@ -274,10 +342,10 @@ class TrasportimusRepository {
         dateTime,
       );
       switch (result.runtimeType) {
-        case const (ApiOk<List<m.Stop>>):
+        case const (ApiOk<List<m.Trip>>):
           retryFor = 0;
-        case const (ApiErr<List<m.Stop>>):
-          var err = result as ApiErr<List<m.Stop>>;
+        case const (ApiErr<List<m.Trip>>):
+          var err = result as ApiErr<List<m.Trip>>;
           if (err.mayRetry) {
             retryFor--;
           } else {
@@ -299,10 +367,10 @@ class TrasportimusRepository {
         dateTime,
       );
       switch (result.runtimeType) {
-        case const (ApiOk<List<m.Stop>>):
+        case const (ApiOk<List<m.Trip>>):
           retryFor = 0;
-        case const (ApiErr<List<m.Stop>>):
-          var err = result as ApiErr<List<m.Stop>>;
+        case const (ApiErr<List<m.Trip>>):
+          var err = result as ApiErr<List<m.Trip>>;
           if (err.mayRetry) {
             retryFor--;
           } else {
@@ -319,10 +387,30 @@ class TrasportimusRepository {
     do {
       result = await _client.getTripDetails(tripId);
       switch (result.runtimeType) {
-        case const (ApiOk<m.Stop>):
+        case const (ApiOk<m.Trip>):
           retryFor = 0;
-        case const (ApiErr<m.Stop>):
-          var err = result as ApiErr<m.Stop>;
+        case const (ApiErr<m.Trip>):
+          var err = result as ApiErr<m.Trip>;
+          if (err.mayRetry) {
+            retryFor--;
+          } else {
+            retryFor = 0;
+          }
+      }
+    } while (retryFor > 0);
+    return result;
+  }
+
+  Future<ApiResult<m.DirectionInfo>> _fetchDirectionInfoUntil(
+      LatLng from, LatLng to, String lang, int retryFor) async {
+    ApiResult<m.DirectionInfo> result;
+    do {
+      result = await _client.getDirectionInfo(from, to, lang: lang);
+      switch (result.runtimeType) {
+        case const (ApiOk<m.DirectionInfo>):
+          retryFor = 0;
+        case const (ApiErr<m.DirectionInfo>):
+          var err = result as ApiErr<m.DirectionInfo>;
           if (err.mayRetry) {
             retryFor--;
           } else {

@@ -17,6 +17,7 @@ dependencies:
   json_serializable: ^6.8.0
   json_annotation: ^4.9.0
   format: ^1.5.2
+  latlong2: ^0.9.1
 
 dev_dependencies:
   flutter_test:
