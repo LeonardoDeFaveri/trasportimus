@@ -10,6 +10,7 @@ import 'package:trasportimus/blocs/prefs/prefs_bloc.dart' as pb;
 import 'package:trasportimus/blocs/transport/transport_bloc.dart' as tb;
 import 'package:trasportimus/location_utils.dart';
 import 'package:trasportimus/pages/stop_trips_page.dart';
+import 'package:trasportimus/widgets/map/hints_type.dart';
 import 'package:trasportimus/widgets/map/search_bar.dart';
 import 'package:trasportimus/widgets/tiles/stop.dart';
 import 'package:trasportimus_repository/model/model.dart';
@@ -108,7 +109,7 @@ class MapPageState extends State<MapPage> {
         Positioned(
             child: Container(
           padding: EdgeInsets.symmetric(horizontal: 30, vertical: 50),
-          child: MapSearchBar(transBloc, favStops, ctrl),
+          child: MapSearchBar(transBloc, favStops, ctrl, _sendDirectionInfoRequest),
         )),
         RichAttributionWidget(
           // Include a stylish prebuilt attribution widget that meets all requirments
@@ -123,6 +124,31 @@ class MapPageState extends State<MapPage> {
         ),
       ],
     );
+  }
+
+  void _sendDirectionInfoRequest(List<HintType> routeComponents) async {
+    List<LatLng> positions = [];
+    bool ok = true;
+    for (HintType hint in routeComponents) {
+      switch (hint.runtimeType) {
+        case const(YourPositionHint):
+          LatLng? pos = await _getCurrentPosition();
+          if (pos != null) {
+            positions.add(pos);
+          } else {
+            ok = false;
+          }
+        case const(LocationHint):
+          var loc = (hint as LocationHint).location;
+          positions.add(LatLng(loc.lat, loc.lon));
+        case const(StopHint):
+          var loc = (hint as StopHint).stop;
+          positions.add(LatLng(loc.latitude, loc.longitude));
+      }
+    }
+    if (ok) {
+      transBloc.add(tb.FetchDirectionInfo(positions[0], positions[1]));
+    }
   }
 
   Widget _buildLocationMarkerLayer(BuildContext context) {
@@ -364,6 +390,25 @@ class MapPageState extends State<MapPage> {
     } catch (ex) {
       // Do nothing
     }
+  }
+
+  Future<LatLng?> _getCurrentPosition() async {
+    var status = await LocationUtils.askForService();
+    if (status == LocationStatus.accessDenied) {
+      return null;
+    }
+
+    try {
+      LocationAccuracy accuracy = LocationAccuracy.high;
+      Position position = await Geolocator.getCurrentPosition(
+        locationSettings: LocationSettings(accuracy: accuracy),
+      );
+      return LatLng(position.latitude, position.longitude);
+    } catch (ex) {
+      // Do nothing
+    }
+
+    return null;
   }
 
   void _goToStopPage(BuildContext context2, Stop stop) {

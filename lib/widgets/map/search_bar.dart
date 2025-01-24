@@ -23,8 +23,9 @@ class MapSearchBar extends StatefulWidget {
   final TransportBloc transBloc;
   final Set<Stop> favStops;
   final MapController mapCtrl;
+  final void Function(List<HintType> routeComponents) planner;
 
-  const MapSearchBar(this.transBloc, this.favStops, this.mapCtrl, {super.key});
+  const MapSearchBar(this.transBloc, this.favStops, this.mapCtrl, this.planner, {super.key});
 
   @override
   State<StatefulWidget> createState() => MapSearchBarState();
@@ -39,7 +40,9 @@ class MapSearchBarState extends State<MapSearchBar> {
   late StreamController<String> textStream;
   late SearchController searchCtrl;
   late List<SearchController> routeCtrls;
+  late List<HintType?> routeComponents;
   late int selectedCtrl;
+  late bool showPosition;
   late List<Stop> stops;
   late DateTime refTime;
   late bool enabled;
@@ -53,7 +56,9 @@ class MapSearchBarState extends State<MapSearchBar> {
     textStream = StreamController.broadcast();
     searchCtrl = SearchController();
     routeCtrls = [SearchController(), SearchController()];
+    routeComponents = [null, null];
     selectedCtrl = 0;
+    showPosition = false;
     osmBloc = OsmBloc();
     stops = [];
     refTime = DateTime.now();
@@ -91,19 +96,23 @@ class MapSearchBarState extends State<MapSearchBar> {
           bloc: widget.transBloc,
           listener: (context, state) {
             if (state is TransportStillFetching) {
-              setState(() {
-                fetchingStopsDataStatus = Status.pending;
-              });
+              if (state.event is FetchStops) {
+                setState(() {
+                  fetchingStopsDataStatus = Status.pending;
+                });
+              }
             } else if (state is TransportFetchedStops) {
               setState(() {
                 fetchingStopsDataStatus = Status.ok;
                 stops = state.stops;
               });
             } else if (state is TransportFetchFailed) {
-              setState(() {
-                fetchingStopsDataStatus = Status.failed;
-              });
-              Defaults.showTrasportimusErrorSnackBar(context, state);
+              if (state.event is FetchStops) {
+                setState(() {
+                  fetchingStopsDataStatus = Status.failed;
+                });
+                Defaults.showTrasportimusErrorSnackBar(context, state);
+              }
             }
           },
         ),
@@ -314,9 +323,10 @@ class MapSearchBarState extends State<MapSearchBar> {
         if (!currentFocus.hasPrimaryFocus) {
           currentFocus.focusedChild?.unfocus();
         }
-        routeCtrls[0].clear();
-        routeCtrls[1].clear();
         textStream.add("");
+        setState(() {
+          showPosition = false;
+        });
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -353,6 +363,10 @@ class MapSearchBarState extends State<MapSearchBar> {
                               onTap: (index) {
                                 setState(() {
                                   selectedCtrl = index;
+                                  if (routeComponents[selectedCtrl] != null) {
+                                    routeCtrls[selectedCtrl].clear();
+                                  }
+                                  showPosition = true;
                                 });
                               },
                               onChanged: searchKey,
@@ -442,7 +456,12 @@ class MapSearchBarState extends State<MapSearchBar> {
                               },
                             ),
                           ),
-                          onPressed: enabled ? () => () : null,
+                          onPressed: enabled ? () {
+                            setState(() {
+                              showPosition = false;
+                            });
+                            widget.planner(routeComponents.map((comp) => comp!).toList()); 
+                          } : null,
                           child: Text(loc.routePlan)),
                     )
                   ],
@@ -469,8 +488,15 @@ class MapSearchBarState extends State<MapSearchBar> {
                 ctrl.text = hint.location.name;
               }
               textStream.add("");
+              routeComponents[selectedCtrl] = hint;
+              selectedCtrl = (selectedCtrl + 1) % 2;
+              if (!routeComponents.contains(null)) {
+                setState(() {
+                  enabled = true;
+                });
+              }
             },
-            showCurrentPosition: true,
+            showCurrentPosition: showPosition,
           )
         ],
       ),
@@ -480,6 +506,7 @@ class MapSearchBarState extends State<MapSearchBar> {
   void reverseRoute() {
     setState(() {
       routeCtrls = routeCtrls.reversed.toList();
+      routeComponents = routeComponents.reversed.toList();
     });
   }
 

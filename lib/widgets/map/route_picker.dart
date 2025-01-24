@@ -39,8 +39,9 @@ class RoutePicker extends StatelessWidget {
             constraints: const BoxConstraints(maxHeight: 45),
             shape: WidgetStatePropertyAll(
               RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  side: BorderSide(color: theme.colorScheme.primary)),
+                borderRadius: BorderRadius.circular(5),
+                side: BorderSide(color: theme.colorScheme.primary),
+              ),
             ),
             elevation: WidgetStatePropertyAll(0),
             padding: WidgetStatePropertyAll(EdgeInsets.all(4.0)),

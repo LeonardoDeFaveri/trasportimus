@@ -84,12 +84,29 @@ final class TransportFetchedTripDetails extends TransportState {
   List<Object?> get props => [trip];
 }
 
-final class TransportStillFetching extends TransportState {}
+final class TransportFetchedDirectionInfo extends TransportState {
+  final m.DirectionInfo directionInfo;
+
+  TransportFetchedDirectionInfo(this.directionInfo);
+
+  @override
+  List<Object?> get props => [directionInfo];
+}
+
+final class TransportStillFetching extends TransportState {
+  final TransportEvent event;
+
+  TransportStillFetching(this.event);
+
+  @override
+  List<Object?> get props => [event];  
+}
 
 final class TransportFetchFailed extends TransportState {
+  final TransportEvent event;
   final m.ErrorType type;
 
-  TransportFetchFailed(this.type);
+  TransportFetchFailed(this.event, this.type);
 
   @override
   List<Object?> get props => [type];
