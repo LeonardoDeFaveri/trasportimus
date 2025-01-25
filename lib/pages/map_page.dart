@@ -305,6 +305,10 @@ class MapPageState extends State<MapPage> {
       builder: (context, state) {
         return BlocBuilder(
           bloc: transBloc,
+          buildWhen: (previous, current) =>
+              (current is tb.TransportStillFetching &&
+                  current.event is tb.FetchStops) ||
+              current is tb.TransportFetchedStops,
           builder: (context, state) {
             List<Marker> markers = [];
             if (state is tb.TransportFetchedStops) {
@@ -355,7 +359,6 @@ class MapPageState extends State<MapPage> {
                 },
               ),
             );
-            //return MarkerLayer(rotate: true, markers: markers);
           },
         );
       },

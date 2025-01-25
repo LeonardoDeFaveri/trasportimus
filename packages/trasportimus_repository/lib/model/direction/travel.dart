@@ -52,7 +52,7 @@ class Transit extends TravelMode {
           end = st.stopSequence - 1;
         }
       }
-      info = RichInfo(trip, start, end);
+      info = RichInfo(trip, start, end, transit.route.color);
     } else {
       info = PoorInfo(
           transit.tripId,
@@ -78,11 +78,12 @@ class RichInfo extends TransitInfo {
   final Trip trip;
   final int departureStopIndex;
   final int arrivalStopIndex;
+  final Color routeColor;
 
-  const RichInfo(this.trip, this.departureStopIndex, this.arrivalStopIndex);
+  const RichInfo(this.trip, this.departureStopIndex, this.arrivalStopIndex, this.routeColor,);
 
   @override
-  List<Object?> get props => [trip, departureStopIndex, arrivalStopIndex];
+  List<Object?> get props => [trip, departureStopIndex, arrivalStopIndex, routeColor,];
 }
 
 class PoorInfo extends TransitInfo {
@@ -92,7 +93,7 @@ class PoorInfo extends TransitInfo {
   final String arrivalStopName;
   final LatLng arrivalStopLoc;
   final String routeFullName;
-  final String routeShortName;
+  final String? routeShortName;
   final Color routeColor;
 
   const PoorInfo(
