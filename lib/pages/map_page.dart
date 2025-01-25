@@ -29,12 +29,13 @@ const double initialZoom = 16.5;
 class MapPageState extends State<MapPage> {
   late final tb.TransportBloc transBloc;
   late final pb.PrefsBloc prefsBloc;
-  late final MapController ctrl;
+  late final MapController mapCtrl;
   late bool shouldAlignPosition;
   late bool shouldAlignDirection;
   late LatLng? currentPosition;
   late double currentZoom;
   late Set<Stop> favStops;
+  late TabController tabCtrl;
 
   @override
   void initState() {
@@ -43,7 +44,7 @@ class MapPageState extends State<MapPage> {
     transBloc.add(tb.FetchStops());
     prefsBloc = context.read<pb.PrefsBloc>();
     prefsBloc.add(pb.FetchStops());
-    ctrl = MapController();
+    mapCtrl = MapController();
     shouldAlignPosition = false;
     shouldAlignDirection = false;
     currentZoom = initialZoom;
@@ -59,8 +60,14 @@ class MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _buildMap(context),
+    tabCtrl = DefaultTabController.of(context);
+    
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) => tabCtrl.animateTo(0),
+      child: Scaffold(
+        body: _buildMap(context),
+      ),
     );
   }
 
@@ -89,7 +96,7 @@ class MapPageState extends State<MapPage> {
           }
         },
       ),
-      mapController: ctrl,
+      mapController: mapCtrl,
       children: [
         TileLayer(
           // Display map tiles from any source
@@ -110,7 +117,7 @@ class MapPageState extends State<MapPage> {
             child: Container(
           padding: EdgeInsets.symmetric(horizontal: 30, vertical: 50),
           child: MapSearchBar(
-              transBloc, favStops, ctrl, _sendDirectionInfoRequest),
+              transBloc, favStops, mapCtrl, _sendDirectionInfoRequest),
         )),
         RichAttributionWidget(
           // Include a stylish prebuilt attribution widget that meets all requirments
@@ -388,7 +395,7 @@ class MapPageState extends State<MapPage> {
         locationSettings: LocationSettings(accuracy: accuracy),
       );
       currentPosition = LatLng(position.latitude, position.longitude);
-      ctrl.moveAndRotate(currentPosition!, currentZoom, 0);
+      mapCtrl.moveAndRotate(currentPosition!, currentZoom, 0);
       setState(() {
         shouldAlignPosition = attachPosition ?? false;
         shouldAlignDirection = attachDirection ?? false;

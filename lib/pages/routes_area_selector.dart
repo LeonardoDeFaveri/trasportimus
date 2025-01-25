@@ -19,6 +19,7 @@ class AreaChoosingPage extends StatefulWidget {
 class AreaChoosingPageState extends State<AreaChoosingPage> {
   late Area selectedArea;
   late AppLocalizations loc;
+  late TabController ctrl;
 
   @override
   void initState() {
@@ -29,6 +30,7 @@ class AreaChoosingPageState extends State<AreaChoosingPage> {
   @override
   Widget build(BuildContext context) {
     loc = AppLocalizations.of(context)!;
+    ctrl = DefaultTabController.of(context);
 
     var map = switch (selectedArea) {
       Area.urban => _buildUrbanAreas(),
@@ -36,110 +38,114 @@ class AreaChoosingPageState extends State<AreaChoosingPage> {
       Area.railway => _buildRailwayAreas(),
     };
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          loc.routes,
-          style: Theme.of(context).textTheme.headlineLarge,
-        ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: Defaults.gradient,
-            boxShadow: Defaults.shadows,
-            borderRadius: BorderRadius.circular(10),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) => ctrl.animateTo(0),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            loc.routes,
+            style: Theme.of(context).textTheme.headlineLarge,
           ),
-        ),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            child: Text(
-              loc.pickArea,
-              style: Theme.of(context).textTheme.headlineMedium,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: Defaults.gradient,
+              boxShadow: Defaults.shadows,
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
-          Expanded(
-            flex: 4,
-            child: map,
-          ),
-          const Expanded(
-            flex: 1,
-            child: Text(''),
-          ),
-        ],
-      ),
-      floatingActionButton: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                loc.railwaysAndCableways,
-                style: Theme.of(context).textTheme.labelSmall,
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              child: Text(
+                loc.pickArea,
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
-              const SizedBox(width: 10),
-              FloatingActionButton(
-                heroTag: 'railwayBtn',
-                onPressed: () => _setArea(Area.railway),
-                shape: const CircleBorder(),
-                backgroundColor: Colors.red[300]!,
-                child: const Icon(
-                  MingCuteIcons.mgc_train_line,
-                  color: Colors.black,
+            ),
+            Expanded(
+              flex: 4,
+              child: map,
+            ),
+            const Expanded(
+              flex: 1,
+              child: Text(''),
+            ),
+          ],
+        ),
+        floatingActionButton: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  loc.railwaysAndCableways,
+                  style: Theme.of(context).textTheme.labelSmall,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                loc.extraurban,
-                style: Theme.of(context).textTheme.labelSmall,
-              ),
-              const SizedBox(width: 10),
-              FloatingActionButton(
-                heroTag: 'extraurbanBtn',
-                onPressed: () => _setArea(Area.extraurban),
-                shape: const CircleBorder(),
-                backgroundColor: Colors.green[300]!,
-                child: const Icon(
-                  MingCuteIcons.mgc_tree_line,
-                  color: Colors.black,
+                const SizedBox(width: 10),
+                FloatingActionButton(
+                  heroTag: 'railwayBtn',
+                  onPressed: () => _setArea(Area.railway),
+                  shape: const CircleBorder(),
+                  backgroundColor: Colors.red[300]!,
+                  child: const Icon(
+                    MingCuteIcons.mgc_train_line,
+                    color: Colors.black,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                loc.urban,
-                style: Theme.of(context).textTheme.labelSmall,
-              ),
-              const SizedBox(width: 10),
-              FloatingActionButton(
-                heroTag: 'urbanBtn',
-                onPressed: () => _setArea(Area.urban),
-                shape: const CircleBorder(),
-                backgroundColor: Colors.cyan[400]!,
-                child: const Icon(
-                  MingCuteIcons.mgc_building_1_line,
-                  color: Colors.black,
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  loc.extraurban,
+                  style: Theme.of(context).textTheme.labelSmall,
                 ),
-              ),
-            ],
-          ),
-        ],
+                const SizedBox(width: 10),
+                FloatingActionButton(
+                  heroTag: 'extraurbanBtn',
+                  onPressed: () => _setArea(Area.extraurban),
+                  shape: const CircleBorder(),
+                  backgroundColor: Colors.green[300]!,
+                  child: const Icon(
+                    MingCuteIcons.mgc_tree_line,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  loc.urban,
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+                const SizedBox(width: 10),
+                FloatingActionButton(
+                  heroTag: 'urbanBtn',
+                  onPressed: () => _setArea(Area.urban),
+                  shape: const CircleBorder(),
+                  backgroundColor: Colors.cyan[400]!,
+                  child: const Icon(
+                    MingCuteIcons.mgc_building_1_line,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

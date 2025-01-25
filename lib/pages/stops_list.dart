@@ -30,6 +30,7 @@ class StopsListState extends State<StopsList> {
   late HashSet<Stop> favStops;
   late AreaType selectedArea;
   late AppLocalizations loc;
+  late TabController ctrl;
 
   @override
   void initState() {
@@ -47,6 +48,7 @@ class StopsListState extends State<StopsList> {
   @override
   Widget build(BuildContext context) {
     loc = AppLocalizations.of(context)!;
+    ctrl = DefaultTabController.of(context);
 
     var baseTitle = Text(
       loc.stops,
@@ -93,69 +95,73 @@ class StopsListState extends State<StopsList> {
       filter(context),
     ];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: isSearchActive ? searchBar : baseTitle,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: Defaults.gradient,
-            boxShadow: Defaults.shadows,
-            borderRadius: BorderRadius.circular(10),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) => ctrl.animateTo(0),
+      child: Scaffold(
+        appBar: AppBar(
+          title: isSearchActive ? searchBar : baseTitle,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: Defaults.gradient,
+              boxShadow: Defaults.shadows,
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
+          actions: isSearchActive ? null : actions,
         ),
-        actions: isSearchActive ? null : actions,
-      ),
-      body: MultiBlocListener(
-        listeners: [
-          BlocListener<tb.TransportBloc, tb.TransportState>(
+        body: MultiBlocListener(
+          listeners: [
+            BlocListener<tb.TransportBloc, tb.TransportState>(
+              bloc: transportBloc,
+              listener: (context, state) {
+                if (state is tb.TransportFetchedStops) {
+                  setState(() {
+                    allStops = state.stops;
+                    allStops!.sort(compareStops);
+                    foundStops = allStops!;
+                  });
+                } else if (state is tb.TransportFetchFailed) {
+                  Defaults.showTrasportimusErrorSnackBar(context, state);
+                }
+              },
+            ),
+            BlocListener<pb.PrefsBloc, pb.PrefsState>(
+              bloc: prefsBloc,
+              listener: (context, state) {
+                if (state is pb.PrefsLoadedStops) {
+                  setState(() {
+                    favStops = state.stops;
+                  });
+                } else if (state is pb.PrefsStopsUpdated) {
+                  setState(() {
+                    favStops = state.stops;
+                  });
+                }
+              },
+            )
+          ],
+          child: BlocBuilder<tb.TransportBloc, tb.TransportState>(
             bloc: transportBloc,
-            listener: (context, state) {
-              if (state is tb.TransportFetchedStops) {
-                setState(() {
-                  allStops = state.stops;
-                  allStops!.sort(compareStops);
-                  foundStops = allStops!;
-                });
-              } else if (state is tb.TransportFetchFailed) {
-                Defaults.showTrasportimusErrorSnackBar(context, state);
+            builder: (context, state) {
+              if (state is tb.TransportStillFetching) {
+                return Defaults.loader;
               }
+              if (state is tb.TransportFetchedStops || foundStops.isNotEmpty) {
+                return Container(
+                  margin: const EdgeInsets.only(top: 5),
+                  child: ListView.builder(
+                    itemBuilder: (context, index) => StopExpanded(
+                        foundStops[index], favStops.contains(foundStops[index])),
+                    itemCount: foundStops.length,
+                  ),
+                );
+              }
+      
+              return Defaults.noDataWidget(
+                  context, () => transportBloc.add(tb.FetchStops()));
             },
           ),
-          BlocListener<pb.PrefsBloc, pb.PrefsState>(
-            bloc: prefsBloc,
-            listener: (context, state) {
-              if (state is pb.PrefsLoadedStops) {
-                setState(() {
-                  favStops = state.stops;
-                });
-              } else if (state is pb.PrefsStopsUpdated) {
-                setState(() {
-                  favStops = state.stops;
-                });
-              }
-            },
-          )
-        ],
-        child: BlocBuilder<tb.TransportBloc, tb.TransportState>(
-          bloc: transportBloc,
-          builder: (context, state) {
-            if (state is tb.TransportStillFetching) {
-              return Defaults.loader;
-            }
-            if (state is tb.TransportFetchedStops || foundStops.isNotEmpty) {
-              return Container(
-                margin: const EdgeInsets.only(top: 5),
-                child: ListView.builder(
-                  itemBuilder: (context, index) => StopExpanded(
-                      foundStops[index], favStops.contains(foundStops[index])),
-                  itemCount: foundStops.length,
-                ),
-              );
-            }
-
-            return Defaults.noDataWidget(
-                context, () => transportBloc.add(tb.FetchStops()));
-          },
         ),
       ),
     );

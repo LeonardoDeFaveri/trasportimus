@@ -62,29 +62,26 @@ class MyApp extends StatelessWidget {
             child: Defaults.loader,
           ),
           screenFunction: () async {
-            return PopScope(
-              canPop: false,
-              child: const DefaultTabController(
-                length: 4,
-                child: Scaffold(
-                  body: TabBarView(children: [
-                    MainPage(),
-                    AreaChoosingPage(),
-                    StopsList(),
-                    MapPage(),
-                  ]),
-                  bottomNavigationBar: TabBar(
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    indicatorWeight: 3,
-                    labelPadding: EdgeInsets.all(8),
-                    labelStyle: TextStyle(fontSize: 32),
-                    tabs: [
-                      Icon(MingCuteIcons.mgc_home_1_line),
-                      Icon(MingCuteIcons.mgc_bus_2_line),
-                      Icon(MingCuteIcons.mgc_desk_line),
-                      Icon(MingCuteIcons.mgc_route_line)
-                    ],
-                  ),
+            return const DefaultTabController(
+              length: 4,
+              child: Scaffold(
+                body: TabBarView(children: [
+                  MainPage(),
+                  AreaChoosingPage(),
+                  StopsList(),
+                  MapPage(),
+                ]),
+                bottomNavigationBar: TabBar(
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicatorWeight: 3,
+                  labelPadding: EdgeInsets.all(8),
+                  labelStyle: TextStyle(fontSize: 32),
+                  tabs: [
+                    Icon(MingCuteIcons.mgc_home_1_line),
+                    Icon(MingCuteIcons.mgc_bus_2_line),
+                    Icon(MingCuteIcons.mgc_desk_line),
+                    Icon(MingCuteIcons.mgc_route_line)
+                  ],
                 ),
               ),
             );
