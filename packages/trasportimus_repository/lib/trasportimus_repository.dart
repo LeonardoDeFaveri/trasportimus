@@ -235,13 +235,15 @@ class TrasportimusRepository {
     return repoResult;
   }
 
-  Future<Result<DirectionInfo>> getDirectionInfo(LatLng from, LatLng to,
+  Future<Result<DirectionInfo>> getDirectionInfo(
+      LatLng from, LatLng to, DateTime refDateTime,
       {String? lang, int? retryFor}) async {
     Result<DirectionInfo> repoResult;
 
     ApiResult<m.DirectionInfo> apiResult = await _fetchDirectionInfoUntil(
       from,
       to,
+      refDateTime,
       lang ?? 'it',
       retryFor ?? _retryFor,
     );
@@ -401,11 +403,12 @@ class TrasportimusRepository {
     return result;
   }
 
-  Future<ApiResult<m.DirectionInfo>> _fetchDirectionInfoUntil(
-      LatLng from, LatLng to, String lang, int retryFor) async {
+  Future<ApiResult<m.DirectionInfo>> _fetchDirectionInfoUntil(LatLng from,
+      LatLng to, DateTime refDateTime, String lang, int retryFor) async {
     ApiResult<m.DirectionInfo> result;
     do {
-      result = await _client.getDirectionInfo(from, to, lang: lang);
+      result =
+          await _client.getDirectionInfo(from, to, refDateTime, lang: lang);
       switch (result.runtimeType) {
         case const (ApiOk<m.DirectionInfo>):
           retryFor = 0;

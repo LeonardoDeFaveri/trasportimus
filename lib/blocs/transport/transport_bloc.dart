@@ -150,10 +150,8 @@ class TransportBloc extends Bloc<TransportEvent, TransportState> {
       m.DirectionInfo? info;
       do {
         var result = await repo.getDirectionInfo(
-          event.from,
-          event.to,
-          lang: event.lang
-        );
+            event.from, event.to, event.refDateTime,
+            lang: event.lang);
         switch (result.runtimeType) {
           case const (m.Ok<m.DirectionInfo>):
             info = (result as m.Ok<m.DirectionInfo>).result;

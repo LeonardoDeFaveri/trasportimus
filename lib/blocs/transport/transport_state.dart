@@ -99,7 +99,7 @@ final class TransportStillFetching extends TransportState {
   TransportStillFetching(this.event);
 
   @override
-  List<Object?> get props => [event];  
+  List<Object?> get props => [event];
 }
 
 final class TransportFetchFailed extends TransportState {

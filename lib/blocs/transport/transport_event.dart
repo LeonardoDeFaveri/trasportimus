@@ -56,10 +56,11 @@ final class FetchTripDetails extends TransportEvent {
 final class FetchDirectionInfo extends TransportEvent {
   final LatLng from;
   final LatLng to;
+  final DateTime refDateTime;
   final String? lang;
 
-  FetchDirectionInfo(this.from, this.to, {this.lang});
+  FetchDirectionInfo(this.from, this.to, this.refDateTime, {this.lang});
 
   @override
-  List<Object?> get props => [from, to, lang];
+  List<Object?> get props => [from, to, refDateTime, lang];
 }

@@ -23,9 +23,10 @@ class MapSearchBar extends StatefulWidget {
   final TransportBloc transBloc;
   final Set<Stop> favStops;
   final MapController mapCtrl;
-  final void Function(List<HintType> routeComponents) planner;
+  final void Function(List<HintType> routeComponents, DateTime refTime) planner;
 
-  const MapSearchBar(this.transBloc, this.favStops, this.mapCtrl, this.planner, {super.key});
+  const MapSearchBar(this.transBloc, this.favStops, this.mapCtrl, this.planner,
+      {super.key});
 
   @override
   State<StatefulWidget> createState() => MapSearchBarState();
@@ -456,12 +457,18 @@ class MapSearchBarState extends State<MapSearchBar> {
                               },
                             ),
                           ),
-                          onPressed: enabled ? () {
-                            setState(() {
-                              showPosition = false;
-                            });
-                            widget.planner(routeComponents.map((comp) => comp!).toList()); 
-                          } : null,
+                          onPressed: enabled
+                              ? () {
+                                  setState(() {
+                                    showPosition = false;
+                                  });
+                                  widget.planner(
+                                      routeComponents
+                                          .map((comp) => comp!)
+                                          .toList(),
+                                      refTime);
+                                }
+                              : null,
                           child: Text(loc.routePlan)),
                     )
                   ],

@@ -109,7 +109,8 @@ class MapPageState extends State<MapPage> {
         Positioned(
             child: Container(
           padding: EdgeInsets.symmetric(horizontal: 30, vertical: 50),
-          child: MapSearchBar(transBloc, favStops, ctrl, _sendDirectionInfoRequest),
+          child: MapSearchBar(
+              transBloc, favStops, ctrl, _sendDirectionInfoRequest),
         )),
         RichAttributionWidget(
           // Include a stylish prebuilt attribution widget that meets all requirments
@@ -126,28 +127,30 @@ class MapPageState extends State<MapPage> {
     );
   }
 
-  void _sendDirectionInfoRequest(List<HintType> routeComponents) async {
+  void _sendDirectionInfoRequest(
+      List<HintType> routeComponents, DateTime refTime) async {
     List<LatLng> positions = [];
     bool ok = true;
     for (HintType hint in routeComponents) {
       switch (hint.runtimeType) {
-        case const(YourPositionHint):
+        case const (YourPositionHint):
           LatLng? pos = await _getCurrentPosition();
           if (pos != null) {
             positions.add(pos);
           } else {
             ok = false;
           }
-        case const(LocationHint):
+        case const (LocationHint):
           var loc = (hint as LocationHint).location;
           positions.add(LatLng(loc.lat, loc.lon));
-        case const(StopHint):
+        case const (StopHint):
           var loc = (hint as StopHint).stop;
           positions.add(LatLng(loc.latitude, loc.longitude));
       }
     }
     if (ok) {
-      transBloc.add(tb.FetchDirectionInfo(positions[0], positions[1]));
+      transBloc.add(
+          tb.FetchDirectionInfo(positions[0], positions[1], refTime.toUtc()));
     }
   }
 
