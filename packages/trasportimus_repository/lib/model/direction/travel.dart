@@ -80,10 +80,20 @@ class RichInfo extends TransitInfo {
   final int arrivalStopIndex;
   final Color routeColor;
 
-  const RichInfo(this.trip, this.departureStopIndex, this.arrivalStopIndex, this.routeColor,);
+  const RichInfo(
+    this.trip,
+    this.departureStopIndex,
+    this.arrivalStopIndex,
+    this.routeColor,
+  );
 
   @override
-  List<Object?> get props => [trip, departureStopIndex, arrivalStopIndex, routeColor,];
+  List<Object?> get props => [
+        trip,
+        departureStopIndex,
+        arrivalStopIndex,
+        routeColor,
+      ];
 }
 
 class PoorInfo extends TransitInfo {
@@ -92,7 +102,7 @@ class PoorInfo extends TransitInfo {
   final LatLng departureStopLoc;
   final String arrivalStopName;
   final LatLng arrivalStopLoc;
-  final String routeFullName;
+  final String? routeFullName;
   final String? routeShortName;
   final Color routeColor;
 

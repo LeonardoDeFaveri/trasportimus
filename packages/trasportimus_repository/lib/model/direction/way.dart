@@ -11,8 +11,8 @@ class Way implements Equatable {
   late final LatLng arrivalPointCoords;
   late final String arrivalPointName;
   late final Bounds bounds;
-  late final DateTime departureTime;
-  late final DateTime arrivalTime;
+  late final DateTime? departureTime;
+  late final DateTime? arrivalTime;
   late final Duration duration;
 
   /// Distance in meters covered by this way
