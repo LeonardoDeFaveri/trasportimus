@@ -3,6 +3,7 @@ import 'package:choice/choice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:format/format.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:trasportimus/blocs/transport/transport_bloc.dart';
@@ -79,6 +80,10 @@ m.StopTime getStopSt(m.Trip trip, m.Stop stop, DateTime refTime) {
   return res ?? trip.stopTimes[0];
 }
 
+String formatTime(int hour, int minute) {
+  return format('{:0>2}:{:0>2}', hour, minute);
+}
+
 class Defaults {
   static final SpinKitChasingDots loader = SpinKitChasingDots(
     color: themeData.colorScheme.primary,
@@ -140,6 +145,7 @@ class Defaults {
         fontStyle: FontStyle.italic,
         fontSize: 20.0,
       ),
+      labelLarge: GoogleFonts.comme(),
       labelMedium:
           GoogleFonts.comme(fontStyle: FontStyle.italic, fontSize: 20.0),
       labelSmall:

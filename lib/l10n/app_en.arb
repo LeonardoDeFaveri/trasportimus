@@ -141,5 +141,39 @@
     "routeStart": "Pick a starting point",
     "routeEnd": "Pick a destination point",
     "yourPosition": "Your position",
-    "routePlan": "Plan your trip"
+    "routePlan": "Plan your trip",
+    "fullTimeInfo": "{h} h {min} min",
+    "@fullTimeInfo": {
+        "placeholders": {
+            "h": {
+                "type": "int"
+            },
+            "min": {
+                "type": "int"
+            }
+        }
+    },
+    "shortTimeInfo": "{min} min",
+    "@shortTimeInfo": {
+        "placeholders": {
+            "min": {
+                "type": "int"
+            }
+        }
+    },
+    "bus": "BUS",
+    "rail": "TRAIN",
+    "cableway": "C.WAY",
+    "noStepInfo": "No route information is available",
+    "stepInfo": "Planned departure: {time} from {place}",
+    "@stepInfo": {
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "place": {
+                "type": "String"
+            }
+        }
+    }
 }

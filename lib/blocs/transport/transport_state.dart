@@ -86,8 +86,9 @@ final class TransportFetchedTripDetails extends TransportState {
 
 final class TransportFetchedDirectionInfo extends TransportState {
   final m.DirectionInfo directionInfo;
+  final DateTime refDateTime;
 
-  TransportFetchedDirectionInfo(this.directionInfo);
+  TransportFetchedDirectionInfo(this.directionInfo, this.refDateTime);
 
   @override
   List<Object?> get props => [directionInfo];

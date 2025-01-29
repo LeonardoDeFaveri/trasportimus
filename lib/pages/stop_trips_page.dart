@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:format/format.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:trasportimus/blocs/prefs/prefs_bloc.dart' as pb;
 import 'package:trasportimus/blocs/transport/transport_bloc.dart' as tb;
@@ -193,7 +192,7 @@ class StopTripsPageState extends State<StopTripsPage> {
     m.StopTime st = getStopSt(trip, widget.stop, refTime);
 
     Widget programmedTime = Text(
-      format('{:0>2}:{:0>2}', st.arrivalTime.hour, st.arrivalTime.minute),
+      formatTime(st.arrivalTime.hour, st.arrivalTime.minute),
       style: theme.textTheme.bodyMedium,
     );
     Widget actualTime;
@@ -202,7 +201,7 @@ class StopTripsPageState extends State<StopTripsPage> {
       int minutes = trip.delay.round();
       DateTime actualArrival = st.arrivalTime.add(Duration(minutes: minutes));
       actualTime = Text(
-        format('{:0>2}:{:0>2}', actualArrival.hour, actualArrival.minute),
+        formatTime(actualArrival.hour, actualArrival.minute),
         style: theme.textTheme.bodyMedium!.copyWith(
             color: minutes < 0
                 ? Colors.cyan

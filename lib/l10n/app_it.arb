@@ -61,5 +61,12 @@
     "routeStart": "Scegli un punto di partenza",
     "routeEnd": "Scegli una destinazione",
     "yourPosition": "La tua posizione",
-    "routePlan": "Pianifica"
+    "routePlan": "Pianifica",
+    "fullTimeInfo": "{h} h {min} min",
+    "shortTimeInfo": "{min} min",
+    "bus": "BUS",
+    "rail": "TRENO",
+    "cableway": "FUN",
+    "noStepInfo": "Non sono disponibili informazioni sul tragitto",
+    "stepInfo": "Partenza prevista: {time} da {place}"
 }

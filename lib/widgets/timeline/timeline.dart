@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:format/format.dart';
 import 'package:timelines/timelines.dart';
 import 'package:trasportimus/utils.dart';
 import 'package:trasportimus_repository/model/model.dart';
@@ -82,7 +81,7 @@ class TripTimeline extends StatelessWidget {
 
   Widget _buildTimeIndicator(StopTime st, ThemeData theme) {
     Widget programmedTime = Text(
-      format('{:0>2}:{:0>2}', st.arrivalTime.hour, st.arrivalTime.minute),
+      formatTime(st.arrivalTime.hour, st.arrivalTime.minute),
       style: theme.textTheme.bodyLarge,
     );
 
@@ -100,7 +99,7 @@ class TripTimeline extends StatelessWidget {
     if (delay != null) {
       DateTime actualArrival = st.arrivalTime.add(Duration(minutes: delay));
       Widget actualTime = Text(
-        format('{:0>2}:{:0>2}', actualArrival.hour, actualArrival.minute),
+        formatTime(actualArrival.hour, actualArrival.minute),
         style: theme.textTheme.bodyLarge!.copyWith(
             color: delay < 0
                 ? Colors.cyan
@@ -121,14 +120,14 @@ class TripTimeline extends StatelessWidget {
 
   Widget _buildPredTimeIndicator(StopTime st, ThemeData theme) {
     Widget programmedTime = Text(
-      format('{:0>2}:{:0>2}', st.arrivalTime.hour, st.arrivalTime.minute),
+      formatTime(st.arrivalTime.hour, st.arrivalTime.minute),
       style: theme.textTheme.bodyLarge,
     );
 
     int delay = pred!.delay.round();
     DateTime actualArrival = st.arrivalTime.add(Duration(minutes: delay));
     Widget actualTime = Text(
-      format('{:0>2}:{:0>2}', actualArrival.hour, actualArrival.minute),
+      formatTime(actualArrival.hour, actualArrival.minute),
       style: theme.textTheme.bodyLarge!.copyWith(
           color: delay < 0
               ? Colors.cyan

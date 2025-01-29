@@ -10,6 +10,7 @@ import 'package:trasportimus/blocs/prefs/prefs_bloc.dart' as pb;
 import 'package:trasportimus/blocs/transport/transport_bloc.dart' as tb;
 import 'package:trasportimus/location_utils.dart';
 import 'package:trasportimus/pages/stop_trips_page.dart';
+import 'package:trasportimus/widgets/map/direction_info_viewer.dart';
 import 'package:trasportimus/widgets/map/hints_type.dart';
 import 'package:trasportimus/widgets/map/search_bar.dart';
 import 'package:trasportimus/widgets/tiles/stop.dart';
@@ -61,7 +62,7 @@ class MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     tabCtrl = DefaultTabController.of(context);
-    
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) => tabCtrl.animateTo(0),
@@ -114,11 +115,13 @@ class MapPageState extends State<MapPage> {
           child: _buildLocationButton(),
         ),
         Positioned(
-            child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 50),
-          child: MapSearchBar(
-              transBloc, favStops, mapCtrl, _sendDirectionInfoRequest),
-        )),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 50),
+            child: MapSearchBar(
+                transBloc, favStops, mapCtrl, _sendDirectionInfoRequest),
+          ),
+        ),
+        DirectionInfoViewer(),
         RichAttributionWidget(
           // Include a stylish prebuilt attribution widget that meets all requirments
           attributions: [
@@ -134,6 +137,7 @@ class MapPageState extends State<MapPage> {
     );
   }
 
+  /// Produces a query to the repository asking for direction info.
   void _sendDirectionInfoRequest(
       List<HintType> routeComponents, DateTime refTime) async {
     List<LatLng> positions = [];
@@ -161,6 +165,8 @@ class MapPageState extends State<MapPage> {
     }
   }
 
+  /// Build the marker showing current location in the map when location info
+  /// are available.
   Widget _buildLocationMarkerLayer(BuildContext context) {
     var theme = Theme.of(context);
     AlignOnUpdate alignPosition = AlignOnUpdate.never;
@@ -209,6 +215,8 @@ class MapPageState extends State<MapPage> {
     );
   }
 
+  /// Builds the button which moves to view to current location (and asks for
+  /// permission when this is disabled) and toggles heading attach.
   Widget _buildLocationButton() {
     var theme = Theme.of(context);
     Widget noDataIcon = Icon(
@@ -252,6 +260,7 @@ class MapPageState extends State<MapPage> {
     );
   }
 
+  /// Builds the actual location button based on its state.
   Widget _buildButtons(
       LocationStatus status, Widget onDisabled, ThemeData theme) {
     if (status == LocationStatus.ok) {
@@ -292,6 +301,7 @@ class MapPageState extends State<MapPage> {
     }
   }
 
+  /// Builds stop markers.
   Widget _buildMarkerLayer(BuildContext context) {
     var theme = Theme.of(context);
 
@@ -358,8 +368,9 @@ class MapPageState extends State<MapPage> {
                       child: Text(
                         markers.length.toString(),
                         style: theme.textTheme.bodyLarge?.copyWith(
-                            color: theme.colorScheme.onPrimary,
-                            fontWeight: FontWeight.bold),
+                          color: theme.colorScheme.onPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   );
@@ -405,6 +416,8 @@ class MapPageState extends State<MapPage> {
     }
   }
 
+  /// Retrieves current position is available (service enabled and permissions
+  /// granted).
   Future<LatLng?> _getCurrentPosition() async {
     var status = await LocationUtils.askForService();
     if (status == LocationStatus.accessDenied) {
@@ -424,6 +437,7 @@ class MapPageState extends State<MapPage> {
     return null;
   }
 
+  /// When a stop marker is tapped go to the relative StopTripPage.
   void _goToStopPage(BuildContext context2, Stop stop) {
     Navigator.push(
       context2,

@@ -67,7 +67,8 @@ class StopsListState extends State<StopsList> {
     );
     var searchBar = SearchBar(
         shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(borderRadius: Defaults.borderRadius)),
+          RoundedRectangleBorder(borderRadius: Defaults.borderRadius),
+        ),
         constraints: BoxConstraints(maxHeight: 50),
         autoFocus: true,
         trailing: [backButton],
@@ -152,12 +153,13 @@ class StopsListState extends State<StopsList> {
                   margin: const EdgeInsets.only(top: 5),
                   child: ListView.builder(
                     itemBuilder: (context, index) => StopExpanded(
-                        foundStops[index], favStops.contains(foundStops[index])),
+                        foundStops[index],
+                        favStops.contains(foundStops[index])),
                     itemCount: foundStops.length,
                   ),
                 );
               }
-      
+
               return Defaults.noDataWidget(
                   context, () => transportBloc.add(tb.FetchStops()));
             },

@@ -162,7 +162,7 @@ class TransportBloc extends Bloc<TransportEvent, TransportState> {
             return;
         }
       } while (info == null);
-      emit(TransportFetchedDirectionInfo(info));
+      emit(TransportFetchedDirectionInfo(info, event.refDateTime));
     });
   }
 }
