@@ -25,11 +25,17 @@ class DirectionTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildMainRow(loc, theme),
-          SizedBox(height: 5,),
+          SizedBox(
+            height: 5,
+          ),
           _buildTimeRow(theme),
-          SizedBox(height: 5,),
+          SizedBox(
+            height: 5,
+          ),
           _buildDepartureInfoRow(loc, theme),
-          SizedBox(height: 2,),
+          SizedBox(
+            height: 2,
+          ),
         ],
       ),
     );
@@ -39,54 +45,13 @@ class DirectionTile extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildTransportIndicators(theme),
-        SizedBox(width: 10,),
+        TransportIndicator(way),
+        SizedBox(
+          width: 10,
+        ),
         _buildTimeInfo(loc, theme),
       ],
     );
-  }
-
-  Widget _buildTransportIndicators(ThemeData theme) {
-    List<Widget> children = [];
-    bool skip = false;
-
-    for (var step in way.steps) {
-      if (children.isNotEmpty && !skip) {
-        children.add(sep);
-      }
-
-      if (step.travelMode is m.Walking) {
-        if (step.duration.inMinutes > 0) {
-          children.add(WalkingTile(step.duration));
-        } else {
-          skip = true;
-        }
-      } else {
-        var mode = step.travelMode as m.Transit;
-        var icon = switch (mode.mode) {
-          m.TransportType.bus => MingCuteIcons.mgc_bus_line,
-          m.TransportType.rail => MingCuteIcons.mgc_train_2_line,
-          m.TransportType.cableway => MingCuteIcons.mgc_aerial_lift_fill,
-          m.TransportType.unknown => MingCuteIcons.mgc_bus_2_line,
-        };
-        children.add(Icon(
-          icon,
-          color: Colors.grey[850],
-        ));
-        children.add(TransitTile(mode.info, mode.mode));
-      }
-    }
-
-    return Expanded(
-        child: SizedBox(
-          height: 31,
-          child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: children.length,
-              itemBuilder: (context, index) => children[index],
-          ),
-        )
-      );
   }
 
   Widget _buildTimeInfo(AppLocalizations loc, ThemeData theme) {
@@ -107,7 +72,7 @@ class DirectionTile extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildTimeRow(ThemeData theme) {
     DateTime dep = way.departureTime ?? refDateTime;
     DateTime arr = way.arrivalTime ?? refDateTime.add(way.duration);
@@ -115,13 +80,17 @@ class DirectionTile extends StatelessWidget {
 
     String departureTimeStr = formatTime(dep.hour, dep.minute);
     String departureDayStr = '';
-    if (dep.day != today.day || dep.month != today.month || dep.year != today.year) {
+    if (dep.day != today.day ||
+        dep.month != today.month ||
+        dep.year != today.year) {
       departureDayStr = ' (${DateFormat.MMMd().format(dep)})';
     }
 
     String arrivalTimeStr = formatTime(arr.hour, arr.minute);
     String arrivalDayStr = '';
-    if (arr.day != today.day || arr.month != today.month || arr.year != today.year) {
+    if (arr.day != today.day ||
+        arr.month != today.month ||
+        arr.year != today.year) {
       arrivalDayStr = ' (${DateFormat.MMMd().format(arr)})';
     }
 
@@ -134,29 +103,24 @@ class DirectionTile extends StatelessWidget {
       style: theme.textTheme.bodyLarge,
     );
   }
-  
+
   Widget _buildDepartureInfoRow(AppLocalizations loc, ThemeData theme) {
     String text;
     try {
       var step = way.steps.firstWhere((step) => step.travelMode is m.Transit);
       var mode = step.travelMode as m.Transit;
-      String place;
-      switch (mode.info.runtimeType) {
-        case const (m.RichInfo):
-          var info = (mode.info as m.RichInfo);
-          place = info.trip.stopTimes[info.departureStopIndex].stop.name;
-        default:
-          var info = (mode.info as m.PoorInfo);
-          place = info.departureStopName;
-      }
+      var place = mode.info.getDepartureStopName();
       var dep = mode.departureTime;
       var time = formatTime(dep.hour, dep.minute);
       text = loc.stepInfo(time, place);
     } catch (e) {
       text = loc.noStepInfo;
     }
-    
-    return Text(text, overflow: TextOverflow.ellipsis,);
+
+    return Text(
+      text,
+      overflow: TextOverflow.ellipsis,
+    );
   }
 }
 
@@ -169,50 +133,52 @@ class WalkingTile extends StatelessWidget {
   Widget build(BuildContext context) {
     int minutes = duration.inMinutes;
     return Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            MingCuteIcons.mgc_walk_fill,
-            color: Colors.grey[850],
-          ),
-          Text(
-            minutes.toString(),
-            style:
-              Theme.of(context).textTheme.bodySmall!.copyWith(fontWeight: FontWeight.bold),
-          )
-        ],
-      );
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          MingCuteIcons.mgc_walk_fill,
+          color: Colors.grey[850],
+        ),
+        Text(
+          minutes.toString(),
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall!
+              .copyWith(fontWeight: FontWeight.bold),
+        )
+      ],
+    );
   }
 }
 
 class TransitTile extends StatelessWidget {
-  final m.TransitInfo info;
+  final String? shortName;
+  final String? fullName;
+  final Color color;
   final m.TransportType mode;
 
-  const TransitTile(this.info, this.mode, {super.key});
+  TransitTile(m.TransitInfo info, this.mode, {super.key})
+      : shortName = info.getRouteShortName(),
+        fullName = info.getRouteFullName(),
+        color = info.getRouteColor();
+
+  const TransitTile.fromData(
+      this.shortName, this.fullName, this.color, this.mode,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
     var loc = AppLocalizations.of(context)!;
     String name;
-    Color color;
-    if (info is m.RichInfo) {
-      var richInfo = info as m.RichInfo;
-      name = richInfo.trip.route.shortName;
-      color = richInfo.trip.route.color;
+    if (shortName == null && fullName != null && fullName!.length > 5) {
+      name = switch (mode) {
+        m.TransportType.rail => loc.rail,
+        m.TransportType.cableway => loc.cableway,
+        _ => loc.bus
+      };
     } else {
-      var poorInfo = info as m.PoorInfo;
-      if (poorInfo.routeShortName == null && poorInfo.routeFullName != null && poorInfo.routeFullName!.length > 5) {
-        name = switch (mode) {
-          m.TransportType.rail => loc.rail,
-          m.TransportType.cableway => loc.cableway,
-          _ => loc.bus
-        };
-      } else {
-        name = poorInfo.routeShortName ?? poorInfo.routeFullName!;
-      }
-      color = poorInfo.routeColor;
+      name = shortName ?? fullName!;
     }
 
     var showBorder = false;
@@ -251,5 +217,55 @@ class TransitTile extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class TransportIndicator extends StatelessWidget {
+  final m.Way way;
+
+  const TransportIndicator(this.way, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> children = [];
+    bool skip = false;
+
+    for (var step in way.steps) {
+      if (children.isNotEmpty && !skip) {
+        children.add(sep);
+      }
+
+      if (step.travelMode is m.Walking) {
+        if (step.duration.inMinutes > 0) {
+          children.add(WalkingTile(step.duration));
+        } else {
+          skip = true;
+        }
+      } else {
+        var mode = step.travelMode as m.Transit;
+        var icon = switch (mode.mode) {
+          m.TransportType.bus => MingCuteIcons.mgc_bus_line,
+          m.TransportType.rail => MingCuteIcons.mgc_train_2_line,
+          m.TransportType.cableway => MingCuteIcons.mgc_aerial_lift_fill,
+          m.TransportType.unknown => MingCuteIcons.mgc_bus_2_line,
+        };
+        children.add(Icon(
+          icon,
+          color: Colors.grey[850],
+        ));
+        children.add(TransitTile(mode.info, mode.mode));
+        skip = false;
+      }
+    }
+
+    return Expanded(
+        child: SizedBox(
+      height: 31,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: children.length,
+        itemBuilder: (context, index) => children[index],
+      ),
+    ));
   }
 }

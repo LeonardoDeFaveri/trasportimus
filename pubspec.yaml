@@ -62,6 +62,7 @@ dependencies:
   location: ^7.0.1
   flutter_map_marker_cluster: ^1.4.0
   fuzzywuzzy: ^1.2.0
+  dotted_line: ^3.2.3
 
 dev_dependencies:
   flutter_launcher_icons: "^0.14.1"

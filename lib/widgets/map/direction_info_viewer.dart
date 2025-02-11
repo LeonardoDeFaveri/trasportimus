@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:trasportimus/blocs/prefs/prefs_bloc.dart' as pb;
 import 'package:trasportimus/blocs/transport/transport_bloc.dart' as tb;
 import 'package:trasportimus/utils.dart';
+import 'package:trasportimus/widgets/map/direction_details.dart';
 import 'package:trasportimus/widgets/map/direction_tile.dart';
 import 'package:trasportimus_repository/model/model.dart' as m;
 
@@ -19,11 +21,13 @@ class DirectionInfoViewer extends StatefulWidget {
 class DirectionInfoViewerState extends State<DirectionInfoViewer> {
   late final tb.TransportBloc transBloc;
   late final pb.PrefsBloc prefsBloc;
+  late AppLocalizations loc;
   late m.DirectionInfo? info;
   late DateTime refDateTime;
   late Status status;
   late tb.TransportEvent? event;
   late bool ignoreNextData;
+  late m.Way? selected;
 
   @override
   void initState() {
@@ -36,6 +40,8 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
 
   @override
   Widget build(BuildContext context) {
+    loc = AppLocalizations.of(context)!;
+
     return MultiBlocListener(
       listeners: [
         BlocListener<pb.PrefsBloc, pb.PrefsState>(
@@ -93,6 +99,43 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
   Widget _buildDraggableScrollSheet(BuildContext context) {
     ThemeData theme = Theme.of(context);
 
+    double appBarHeight = 3;
+    List<Widget> appBarChildren = [
+      Center(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).hintColor,
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+          ),
+          height: 4,
+          width: 40,
+          margin: const EdgeInsets.symmetric(vertical: 10),
+        ),
+      ),
+    ];
+
+    if (status == Status.single) {
+      appBarChildren.add(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 6,
+            ),
+            TransportIndicator(selected!),
+            IconButton(
+              onPressed: () => setState(() {
+                status = Status.all;
+              }),
+              icon: Icon(MingCuteIcons.mgc_close_circle_line),
+            )
+          ],
+        ),
+      );
+      appBarHeight = 50;
+    }
+
     double minChildSize = 0.03;
     double maxChildSize, initialChildSize;
     Widget child;
@@ -114,10 +157,10 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
         maxChildSize = 0.6;
         initialChildSize = 0.6;
         child = _buildAllView(context, theme);
-      default:
-        maxChildSize = 0.5;
-        initialChildSize = 0.2;
-        child = SliverToBoxAdapter(child: Text('C'));
+      case Status.single:
+        maxChildSize = 0.8;
+        initialChildSize = 0.8;
+        child = _buildSingleView(context, theme);
     }
 
     return DraggableScrollableSheet(
@@ -128,30 +171,25 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
         return Container(
           clipBehavior: Clip.hardEdge,
           decoration: BoxDecoration(
-              color: theme.canvasColor,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
-              ),
-              boxShadow: Defaults.shadows,
+            color: theme.canvasColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
+            ),
+            boxShadow: Defaults.shadows,
           ),
           child: CustomScrollView(
             controller: scrollController,
             slivers: [
-              SliverToBoxAdapter(
-                child: Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).hintColor,
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    ),
-                    height: 4,
-                    width: 40,
-                    margin: const EdgeInsets.symmetric(vertical: 10),
-                  ),
+              SliverAppBar(
+                flexibleSpace: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: appBarChildren,
                 ),
+                toolbarHeight: appBarHeight,
+                pinned: true,
               ),
-              child
+              child,
             ],
           ),
         );
@@ -171,21 +209,10 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
               size: 32.0,
               color: theme.colorScheme.primary,
             ),
-            Text('Trip directions will appear here',
-                style: theme.textTheme.bodyLarge)
+            Text(loc.noDirectionInfo, style: theme.textTheme.bodyLarge)
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildAllView(BuildContext context, ThemeData theme) {
-    List<m.Way> ways = info!.ways;
-    return SliverList.builder(
-      itemCount: ways.length,
-      itemBuilder: (context, index) {
-        return DirectionTile(ways[index], refDateTime);
-      },
     );
   }
 
@@ -202,8 +229,29 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
   Widget _buildErrorView(BuildContext context, ThemeData theme) {
     return SliverPadding(
       padding: EdgeInsets.all(8.0),
-      sliver:
-          SliverToBoxAdapter(child: Defaults.noDataWidget(context, () => transBloc.add(event!))),
+      sliver: SliverToBoxAdapter(
+        child: Defaults.noDataWidget(context, () => transBloc.add(event!)),
+      ),
     );
+  }
+
+  Widget _buildAllView(BuildContext context, ThemeData theme) {
+    List<m.Way> ways = info!.ways;
+    return SliverList.builder(
+      itemCount: ways.length,
+      itemBuilder: (context, index) {
+        return GestureDetector(
+          onTap: () => setState(() {
+            selected = ways[index];
+            status = Status.single;
+          }),
+          child: DirectionTile(ways[index], refDateTime),
+        );
+      },
+    );
+  }
+
+  Widget _buildSingleView(BuildContext context, ThemeData theme) {
+    return SliverToBoxAdapter(child: DirectionDetails(selected!));
   }
 }

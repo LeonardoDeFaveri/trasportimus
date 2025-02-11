@@ -142,6 +142,7 @@
     "routeEnd": "Pick a destination point",
     "yourPosition": "Your position",
     "routePlan": "Plan your trip",
+    "noDirectionInfo": "Trip directions will appear here",
     "fullTimeInfo": "{h} h {min} min",
     "@fullTimeInfo": {
         "placeholders": {
@@ -172,6 +173,92 @@
                 "type": "String"
             },
             "place": {
+                "type": "String"
+            }
+        }
+    },
+    "onFootInfo": "About {time} on foot ({distance})",
+    "@onFootInfo": {
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "distance": {
+                "type": "String"
+            }
+        }
+    },
+    "onFootInfoWait": "About {time} on foot ({distance}), then wait up to {wait}",
+    "@onFootInfoWait": {
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "distance": {
+                "type": "String"
+            },
+            "wait": {
+                "type": "String"
+            }
+        }
+    },
+    "departureTimeInfo": "According to schedule",
+    "transferring": "Transferring",
+    "distance": "{km}.{m}km",
+    "@distance": {
+        "placeholders": {
+            "km": {
+                "type": "int"
+            },
+            "m": {
+                "type": "int"
+            }
+        }
+    },
+    "minute": "1 minute",
+    "minutes": "{min} minutes",
+    "@minutes": {
+        "placeholders": {
+            "min": {
+                "type": "int"
+            }
+        }
+    },
+    "hour": "1 hour",
+    "hours": "{h} hours",
+    "@hours": {
+        "placeholders": {
+            "h": {
+                "type": "int"
+            }
+        }
+    },
+    "time": "{h}h {min}min",
+    "@time": {
+        "placeholders": {
+            "h": {
+                "type": "int"
+            },
+            "min": {
+                "type": "int"
+            }
+        }
+    },
+    "intermediateStop": "1 stop with public transport ({time})",
+    "@intermediateStop": {
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "intermediateStops": "{stops} stops with public transport ({time})",
+    "@intermediateStops": {
+        "placeholders": {
+            "stops": {
+                "type": "int"
+            },
+            "time": {
                 "type": "String"
             }
         }

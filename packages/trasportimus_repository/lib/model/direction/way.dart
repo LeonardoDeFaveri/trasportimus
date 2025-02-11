@@ -14,6 +14,7 @@ class Way implements Equatable {
   late final DateTime? departureTime;
   late final DateTime? arrivalTime;
   late final Duration duration;
+  late final String polyline;
 
   /// Distance in meters covered by this way
   late final int distance;
@@ -30,6 +31,7 @@ class Way implements Equatable {
     required this.duration,
     required this.distance,
     required this.steps,
+    required this.polyline,
   });
 
   @override
@@ -40,7 +42,8 @@ class Way implements Equatable {
         arrivalPointName,
         departureTime,
         arrivalTime,
-        duration
+        duration,
+        polyline
       ];
 
   @override
@@ -63,5 +66,6 @@ class Way implements Equatable {
       northEast: way.bounds.northEast,
       southWest: way.bounds.southWest,
     );
+    polyline = way.polyline;
   }
 }

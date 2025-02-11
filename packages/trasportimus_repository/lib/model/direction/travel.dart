@@ -52,7 +52,7 @@ class Transit extends TravelMode {
           end = st.stopSequence - 1;
         }
       }
-      info = RichInfo(trip, start, end, transit.route.color);
+      info = RichInfo(trip, start, end);
     } else {
       info = PoorInfo(
           transit.tripId,
@@ -62,6 +62,7 @@ class Transit extends TravelMode {
           transit.arrivalStop.location,
           transit.route.fullName,
           transit.route.shortName,
+          transit.headsign,
           transit.route.color);
     }
   }
@@ -69,6 +70,15 @@ class Transit extends TravelMode {
 
 sealed class TransitInfo implements Equatable {
   const TransitInfo();
+
+  String getDepartureStopName();
+  LatLng getDepartureStopLoc();
+  String getArrivalStopName();
+  LatLng getArrivalStopLoc();
+  String? getRouteFullName();
+  String? getRouteShortName();
+  String getRouteHeadSign();
+  Color getRouteColor();
 
   @override
   bool? get stringify => true;
@@ -78,21 +88,52 @@ class RichInfo extends TransitInfo {
   final Trip trip;
   final int departureStopIndex;
   final int arrivalStopIndex;
-  final Color routeColor;
 
   const RichInfo(
     this.trip,
     this.departureStopIndex,
     this.arrivalStopIndex,
-    this.routeColor,
   );
+
+  @override
+  LatLng getArrivalStopLoc() {
+    var stop = trip.stopTimes[arrivalStopIndex].stop;
+    return LatLng(stop.latitude, stop.longitude);
+  }
+
+  @override
+  String getArrivalStopName() {
+    return trip.stopTimes[arrivalStopIndex].stop.name;
+  }
+
+  @override
+  LatLng getDepartureStopLoc() {
+    var stop = trip.stopTimes[departureStopIndex].stop;
+    return LatLng(stop.latitude, stop.longitude);
+  }
+
+  @override
+  String getDepartureStopName() {
+    return trip.stopTimes[departureStopIndex].stop.name;
+  }
+
+  @override
+  Color getRouteColor() => trip.route.color;
+
+  @override
+  String? getRouteFullName() => trip.route.longName;
+
+  @override
+  String? getRouteShortName() => trip.route.shortName;
+
+  @override
+  String getRouteHeadSign() => trip.tripHeadSign;
 
   @override
   List<Object?> get props => [
         trip,
         departureStopIndex,
         arrivalStopIndex,
-        routeColor,
       ];
 }
 
@@ -104,6 +145,7 @@ class PoorInfo extends TransitInfo {
   final LatLng arrivalStopLoc;
   final String? routeFullName;
   final String? routeShortName;
+  final String headSign;
   final Color routeColor;
 
   const PoorInfo(
@@ -114,8 +156,33 @@ class PoorInfo extends TransitInfo {
     this.arrivalStopLoc,
     this.routeFullName,
     this.routeShortName,
+    this.headSign,
     this.routeColor,
   );
+
+  @override
+  LatLng getArrivalStopLoc() => arrivalStopLoc;
+
+  @override
+  String getArrivalStopName() => arrivalStopName;
+
+  @override
+  LatLng getDepartureStopLoc() => departureStopLoc;
+
+  @override
+  String getDepartureStopName() => departureStopName;
+
+  @override
+  Color getRouteColor() => routeColor;
+
+  @override
+  String? getRouteFullName() => routeFullName;
+
+  @override
+  String? getRouteShortName() => routeShortName;
+
+  @override
+  String getRouteHeadSign() => headSign;
 
   @override
   List<Object?> get props => [
@@ -126,6 +193,7 @@ class PoorInfo extends TransitInfo {
         arrivalStopLoc,
         routeFullName,
         routeShortName,
+        headSign,
         routeColor,
       ];
 }

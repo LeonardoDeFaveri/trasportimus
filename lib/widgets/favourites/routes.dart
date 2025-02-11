@@ -114,8 +114,8 @@ class FavouriteRoutesState extends State<FavouriteRoutes> {
                   }),
                   icon: Icon(
                     expanded
-                        ? MingCuteIcons.mgc_list_collapse_line
-                        : MingCuteIcons.mgc_list_expansion_line,
+                        ? MingCuteIcons.mgc_up_line
+                        : MingCuteIcons.mgc_down_line,
                   ),
                 )
               ],

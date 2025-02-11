@@ -9,6 +9,7 @@ class Step implements Equatable {
   late final TravelMode travelMode;
   late final int distance;
   late final Duration duration;
+  late final String polyline;
 
   Step({
     required this.startLocation,
@@ -16,6 +17,7 @@ class Step implements Equatable {
     required this.travelMode,
     required this.distance,
     required this.duration,
+    required this.polyline,
   });
 
   @override
@@ -40,5 +42,6 @@ class Step implements Equatable {
     } else {
       travelMode = Transit.fromApiTransit(step.travelMode as m.Transit, trip);
     }
+    polyline = step.polyline;
   }
 }

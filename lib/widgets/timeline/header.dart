@@ -211,8 +211,8 @@ class TripTimelineHeader extends StatelessWidget {
     AppLocalizations loc = AppLocalizations.of(context)!;
     String text = loc.noReading;
     if (trip!.lastUpdate != null) {
-      text = loc.lastReading(formatTime(trip!.lastUpdate!.hour + 1,
-          trip!.lastUpdate!.minute));
+      text = loc.lastReading(
+          formatTime(trip!.lastUpdate!.hour + 1, trip!.lastUpdate!.minute));
     } else if (pred != null && pred.lastUpdate != null) {
       text = loc.lastReading(format(
           '{:0>2}:{:0>2}', pred.lastUpdate!.hour + 1, pred.lastUpdate!.minute));
