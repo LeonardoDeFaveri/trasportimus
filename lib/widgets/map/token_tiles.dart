@@ -17,7 +17,8 @@ Widget buildWalkingTile(
   String text;
 
   if (token.waitingTime != null) {
-    text = loc.onFootInfoWait(time, distance, _getTimeStr(token.waitingTime!, loc));
+    text = loc.onFootInfoWait(
+        time, distance, _getTimeStr(token.waitingTime!, loc));
   } else {
     text = loc.onFootInfo(time, distance);
   }
@@ -36,23 +37,30 @@ Widget buildTransferringTile(
   );
 }
 
-Widget buildStartLocationTile(StartLocation token, BuildContext context, ThemeData theme) {
+Widget buildStartLocationTile(
+    StartLocation token, BuildContext context, ThemeData theme) {
   return _buildStopTile(
-    token.stop, token.name, token.address, token.time, context, theme
+    token.stop,
+    token.name,
+    token.address,
+    token.time,
+    context,
+    theme,
+    showTime: false,
   );
 }
 
-Widget buildEndLocationTile(EndLocation token, BuildContext context, ThemeData theme) {
+Widget buildEndLocationTile(
+    EndLocation token, BuildContext context, ThemeData theme) {
   return _buildStopTile(
-    token.stop, token.name, token.address, token.time, context, theme
-  );
+      token.stop, token.name, token.address, token.time, context, theme);
 }
 
 Widget buildTransitStartLocationTile(
     TransitStartLocation token, BuildContext context, ThemeData theme) {
   return _buildStopTile(
-    token.stop, token.name, token.address, null, context, theme
-  );
+      token.stop, token.name, token.address, token.time, context, theme,
+      showTime: false);
 }
 
 Widget buildTransitRouteInfoTile(TransitRouteInfo token, BuildContext context,
@@ -60,10 +68,8 @@ Widget buildTransitRouteInfoTile(TransitRouteInfo token, BuildContext context,
   List<Widget> children = [
     Text(
       formatTime(token.time.hour, token.time.minute),
-      style: theme.textTheme.bodyLarge?.copyWith(
-        fontWeight: FontWeight.bold,
-        fontSize: 20
-      ),
+      style: theme.textTheme.bodyLarge
+          ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
     )
   ];
 
@@ -75,7 +81,7 @@ Widget buildTransitRouteInfoTile(TransitRouteInfo token, BuildContext context,
 
   return GestureDetector(
     onTap: token.trip != null
-        ? () => _goToRoutePage(context, token.trip!.route)
+        ? () => _goToRoutePage(context, token.trip!, token.time)
         : null,
     child: SizedBox(
       width: double.infinity,
@@ -128,14 +134,15 @@ Widget buildTransitRouteInfoTile(TransitRouteInfo token, BuildContext context,
 Widget buildTransitStopLocationTile(
     TransitStopLocation token, BuildContext context, ThemeData theme) {
   return _buildStopTile(
-    token.stop, token.name, token.address, token.arrivalTime, context, theme
-  );
+      token.stop, token.name, token.address, token.arrivalTime, context, theme);
 }
 
 Widget buildTransitIntermediateLocationHeader(
-  TransitIntermediateLocationHeader token, ThemeData theme, bool expanded,
-  void Function()? toggle, AppLocalizations loc
-) {
+    TransitIntermediateLocationHeader token,
+    ThemeData theme,
+    bool expanded,
+    void Function()? toggle,
+    AppLocalizations loc) {
   Widget text;
   if (token.quantity == 1) {
     text = Expanded(
@@ -169,34 +176,30 @@ Widget buildTransitIntermediateLocationHeader(
       onTap: toggle,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(icon),
-          SizedBox(width: 5),
-          text
-        ],
+        children: [Icon(icon), SizedBox(width: 5), text],
       ),
     );
   }
 }
 
 Widget buildTransitIntermediateLocationSingle(
-  TransitIntermediateLocationSingle token, ThemeData  theme
-) {
-  return Row(
-    children: [Text(
+    TransitIntermediateLocationSingle token, ThemeData theme) {
+  return Row(children: [
+    Text(
       token.name,
       style: theme.textTheme.bodySmall,
       overflow: TextOverflow.ellipsis,
-    )]
-  );
+    )
+  ]);
 }
 
-Widget _buildStopTile(
-  m.Stop? stop, String name, String address, DateTime? time,
-  BuildContext context, ThemeData theme
-) {
+Widget _buildStopTile(m.Stop? stop, String name, String address, DateTime? time,
+    BuildContext context, ThemeData theme,
+    {bool? showTime}) {
   String addr = _getAddressStr(stop, address);
-  String timeStr = time != null ? formatTime(time.hour, time.minute) : "";
+  String timeStr = time != null && showTime != false
+      ? formatTime(time.hour, time.minute)
+      : "";
 
   List<Widget> children = [
     Text(
@@ -204,7 +207,7 @@ Widget _buildStopTile(
       style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
     )
   ];
-  
+
   if (stop != null) {
     children.add(Icon(MingCuteIcons.mgc_arrow_right_line));
   } else {
@@ -212,8 +215,7 @@ Widget _buildStopTile(
   }
 
   return GestureDetector(
-    onTap:
-        stop != null ? () => _goToStopPage(context, stop) : null,
+    onTap: stop != null ? () => _goToStopPage(context, stop, time) : null,
     child: SizedBox(
       width: double.infinity,
       child: Row(
@@ -261,7 +263,7 @@ Widget _buildStopTile(
   );
 }
 
-void _goToStopPage(BuildContext context, m.Stop stop) {
+void _goToStopPage(BuildContext context, m.Stop stop, DateTime? refTime) {
   var transBloc = context.read<tb.TransportBloc>();
   Navigator.push(
     context,
@@ -270,21 +272,28 @@ void _goToStopPage(BuildContext context, m.Stop stop) {
         BlocProvider(
           create: (context) => tb.TransportBloc.reuse(repo: transBloc.repo),
         ),
-      ], child: StopTripsPage(stop)),
+      ], child: StopTripsPage(stop, refTime: refTime)),
     ),
   );
 }
 
-void _goToRoutePage(BuildContext context, m.Route route) {
+void _goToRoutePage(BuildContext context, m.Trip trip, DateTime refTime) {
   var transBloc = context.read<tb.TransportBloc>();
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => MultiBlocProvider(providers: [
-        BlocProvider(
-          create: (context) => tb.TransportBloc.reuse(repo: transBloc.repo),
+      builder: (context) => MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => tb.TransportBloc.reuse(repo: transBloc.repo),
+          ),
+        ],
+        child: RouteTripsPage(
+          trip.route,
+          initialTrip: trip.tripId,
+          refTime: refTime,
         ),
-      ], child: RouteTripsPage(route)),
+      ),
     ),
   );
 }

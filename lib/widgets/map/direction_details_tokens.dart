@@ -49,13 +49,14 @@ class TransitStartLocation extends DirectionDetailsToken {
   final String name;
   final String address;
   final LatLng location;
+  final DateTime time;
   final m.TransportType mode;
   final bool showWalking;
   final m.Stop? stop;
   final m.TransitInfo transitInfo;
 
-  const TransitStartLocation(this.name, this.address, this.location, this.mode,
-      this.stop, this.transitInfo,
+  const TransitStartLocation(this.name, this.address, this.location, this.time,
+      this.mode, this.stop, this.transitInfo,
       {required this.showWalking});
 }
 
@@ -95,14 +96,8 @@ class TransitIntermediateLocationHeader extends DirectionDetailsToken {
   final Color color;
   final int id;
 
-  const TransitIntermediateLocationHeader(
-    this.quantity,
-    this.duration,
-    this.isExpanded,
-    this.canExpand,
-    this.color,
-    this.id
-  );
+  const TransitIntermediateLocationHeader(this.quantity, this.duration,
+      this.isExpanded, this.canExpand, this.color, this.id);
 }
 
 class TransitIntermediateLocationSingle extends DirectionDetailsToken {

@@ -16,9 +16,10 @@ import 'package:trasportimus_repository/model/model.dart' as m;
 
 class RouteTripsPage extends StatefulWidget {
   final m.Route route;
+  final String? initialTrip;
   final DateTime? refTime;
 
-  const RouteTripsPage(this.route, {this.refTime, super.key});
+  const RouteTripsPage(this.route, {this.refTime, this.initialTrip, super.key});
 
   @override
   State<StatefulWidget> createState() => RouteTripsPageState();
@@ -40,6 +41,7 @@ class RouteTripsPageState extends State<RouteTripsPage> {
   late Timer autoReloadTimer;
   late AppLocalizations loc;
   late tb.TransportFetchedTripsForRoute? oldState;
+  String? initialTrip;
 
   @override
   void initState() {
@@ -56,6 +58,7 @@ class RouteTripsPageState extends State<RouteTripsPage> {
     pageIndex = null;
     autoReload = false;
     oldState = null;
+    initialTrip = widget.initialTrip;
     _activateTimer();
     // I should start the timer only once I've got the first useful data
     autoReloadTimer.cancel();
@@ -143,6 +146,9 @@ class RouteTripsPageState extends State<RouteTripsPage> {
               trips = oldState!.trips;
               if (trips.isEmpty) {
                 return _buildNoTripView(context);
+              }
+              if (initialTrip != null) {
+                pageIndex = _findIndexFromTrip(initialTrip!);
               }
               pageIndex ??= _findClosestToRefTime();
 
@@ -348,6 +354,15 @@ class RouteTripsPageState extends State<RouteTripsPage> {
     });
     if (index >= 0) {
       return index;
+    }
+    return null;
+  }
+
+  int? _findIndexFromTrip(String id) {
+    for (var (i, trip) in trips.indexed) {
+      if (trip.tripId == id) {
+        return i;
+      }
     }
     return null;
   }

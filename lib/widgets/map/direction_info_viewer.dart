@@ -109,7 +109,7 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
           ),
           height: 4,
           width: 40,
-          margin: const EdgeInsets.symmetric(vertical: 10),
+          margin: const EdgeInsets.only(top: 10, bottom: 5),
         ),
       ),
     ];
@@ -133,7 +133,7 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
           ],
         ),
       );
-      appBarHeight = 50;
+      appBarHeight = 48;
     }
 
     double minChildSize = 0.03;

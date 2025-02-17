@@ -54,7 +54,7 @@ class DirectionDetailsState extends State<DirectionDetails> {
         content = buildWalkingTile(token, theme, loc);
         startConnector = _buildWalkingConnector(start: true);
         endConnector = _buildWalkingConnector();
-        extent = 60;
+        extent = 65;
       } else if (token is Transferring) {
         indicator = _buildWalkingIndicator();
         content = buildTransferringTile(token, theme, loc);
@@ -97,7 +97,7 @@ class DirectionDetailsState extends State<DirectionDetails> {
         content = buildTransitIntermediateLocationSingle(token, theme);
         startConnector = _buildTransitConnector(token.color);
         endConnector = _buildTransitConnector(token.color);
-        extent = 30;
+        extent = 32;
         showBorder = false;
       } else if (token is TransitStopLocation) {
         indicator = _buildTransitStopLocationIndicator(token);
@@ -108,8 +108,10 @@ class DirectionDetailsState extends State<DirectionDetails> {
           endConnector = _buildWalkingConnector();
         }
         extent = 65;
+        showBorder = true;
       } else {
         var localToken = token as EndLocation;
+        showBorder = false;
         indicator = Icon(
           MingCuteIcons.mgc_location_fill,
           size: 24,
@@ -124,11 +126,16 @@ class DirectionDetailsState extends State<DirectionDetails> {
 
       tiles.add(TimelineTile(
         contents: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 10.0),
+          margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0),
           padding: const EdgeInsets.symmetric(vertical: 8.0),
-          decoration: showBorder ? BoxDecoration(
-            border: Border(bottom: BorderSide(width: 0.8, strokeAlign: -1)),
-          ) : null,
+          decoration: showBorder
+              ? BoxDecoration(
+                  border: Border(
+                      bottom: BorderSide(
+                    width: 0.8,
+                  )),
+                )
+              : null,
           alignment: Alignment.center,
           child: content,
         ),
@@ -147,14 +154,16 @@ class DirectionDetailsState extends State<DirectionDetails> {
       controller: controller,
       padding: EdgeInsets.only(top: 2),
       theme: TimelineThemeData(
-          indicatorPosition: 0.5,
-          nodePosition: 0.025,
-          indicatorTheme: IndicatorThemeData(
-            size: 24,
-            color: Colors.blueGrey,
-          ),
-          connectorTheme:
-              ConnectorThemeData(color: Colors.blueGrey, thickness: 5)),
+        indicatorPosition: 0.5,
+        nodePosition: 0.025,
+        nodeItemOverlap: false,
+        indicatorTheme: IndicatorThemeData(
+          size: 24,
+          color: Colors.blueGrey,
+        ),
+        connectorTheme:
+            ConnectorThemeData(color: Colors.blueGrey, thickness: 5),
+      ),
       children: tiles,
     );
   }
@@ -254,6 +263,7 @@ class DirectionDetailsState extends State<DirectionDetails> {
           depStop?.name ?? info.getDepartureStopName(),
           depStop?.street ?? '',
           info.getDepartureStopLoc(),
+          transit.departureTime,
           mode.mode,
           depStop,
           info,
@@ -340,6 +350,9 @@ class DirectionDetailsState extends State<DirectionDetails> {
   }
 
   Widget _buildTransitConnector(Color routeColor) {
+    if (routeColor == Colors.white) {
+      routeColor = Colors.black12;
+    }
     return Connector.solidLine(
       color: routeColor,
       thickness: 20,
@@ -364,6 +377,11 @@ class DirectionDetailsState extends State<DirectionDetails> {
       m.TransportType.unknown => MingCuteIcons.mgc_bus_2_fill,
     };
 
+    var routeColor = token.transitInfo.getRouteColor();
+    if (routeColor == Colors.white) {
+      routeColor = Colors.black12;
+    }
+
     return Stack(
       alignment: AlignmentDirectional.center,
       children: [
@@ -371,7 +389,7 @@ class DirectionDetailsState extends State<DirectionDetails> {
           width: 20,
           height: 24,
           decoration: BoxDecoration(
-            color: token.transitInfo.getRouteColor(),
+            color: routeColor,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(25),
               topRight: Radius.circular(25),
@@ -396,14 +414,19 @@ class DirectionDetailsState extends State<DirectionDetails> {
   }
 
   Widget _buildTransitStopLocationIndicator(TransitStopLocation token) {
+    var routeColor = token.transitInfo.getRouteColor();
+    if (routeColor == Colors.white) {
+      routeColor = Colors.black12;
+    }
+
     return Stack(
       alignment: AlignmentDirectional.center,
       children: [
         Container(
           width: 20,
-          height: 22,
+          height: 20,
           decoration: BoxDecoration(
-            color: token.transitInfo.getRouteColor(),
+            color: routeColor,
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(25),
               bottomRight: Radius.circular(25),
@@ -422,16 +445,15 @@ class DirectionDetailsState extends State<DirectionDetails> {
     );
   }
 
-  Widget _buildTransitIntermediateLocationIndictor(TransitIntermediateLocationSingle token) {
+  Widget _buildTransitIntermediateLocationIndictor(
+      TransitIntermediateLocationSingle token) {
     return Stack(
       alignment: AlignmentDirectional.center,
       children: [
         Container(
           width: 20,
-          height: 22,
-          decoration: BoxDecoration(
-            color: token.color,
-          ),
+          height: 10,
+          color: token.color,
         ),
         Container(
           width: 8,
