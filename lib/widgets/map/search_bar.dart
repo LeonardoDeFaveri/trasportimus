@@ -366,6 +366,7 @@ class MapSearchBarState extends State<MapSearchBar> {
                                   selectedCtrl = index;
                                   if (routeComponents[selectedCtrl] != null) {
                                     routeCtrls[selectedCtrl].clear();
+                                    enabled = false;
                                   }
                                   showPosition = true;
                                 });
@@ -442,17 +443,19 @@ class MapSearchBarState extends State<MapSearchBar> {
                           style: ButtonStyle(
                             shape: WidgetStatePropertyAll(
                                 RoundedRectangleBorder(
-                                    borderRadius: Defaults.borderRadius)),
-                            backgroundColor: WidgetStatePropertyAll(
-                                theme.colorScheme.primary),
-                            foregroundColor:
+                                    borderRadius: Defaults.borderRadius,
+                                ),
+                            ),
+                            foregroundColor: WidgetStatePropertyAll(
+                                theme.colorScheme.onPrimary),
+                            backgroundColor:
                                 WidgetStateProperty.resolveWith<Color>(
                               (states) {
-                                if (states.contains(WidgetState.disabled)) {
-                                  return theme.colorScheme.onPrimary
-                                      .withAlpha(200);
+                                if (enabled) {
+                                  return theme.colorScheme.primary;
                                 } else {
-                                  return theme.colorScheme.onPrimary;
+                                  return theme.colorScheme.primary
+                                      .withAlpha(200);
                                 }
                               },
                             ),
@@ -496,12 +499,18 @@ class MapSearchBarState extends State<MapSearchBar> {
               }
               textStream.add("");
               routeComponents[selectedCtrl] = hint;
-              selectedCtrl = (selectedCtrl + 1) % 2;
-              if (!routeComponents.contains(null)) {
-                setState(() {
-                  enabled = true;
-                });
+              int nextCtrl = (selectedCtrl + 1) % 2;
+              if (routeComponents[selectedCtrl] == routeComponents[nextCtrl]) {
+                routeComponents[nextCtrl] = null;
+                routeCtrls[nextCtrl].clear();
+                enabled = false;
               }
+              if (!routeComponents.contains(null)) {
+                enabled = true;
+              }
+              setState(() {
+                selectedCtrl = nextCtrl;
+              });
             },
             showCurrentPosition: showPosition,
           )

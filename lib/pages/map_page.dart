@@ -37,6 +37,7 @@ class MapPageState extends State<MapPage> {
   late double currentZoom;
   late Set<Stop> favStops;
   late TabController tabCtrl;
+  late bool canPop;
 
   @override
   void initState() {
@@ -49,6 +50,7 @@ class MapPageState extends State<MapPage> {
     shouldAlignPosition = false;
     shouldAlignDirection = false;
     currentZoom = initialZoom;
+    canPop = true;
 
     favStops = {};
 
@@ -65,7 +67,11 @@ class MapPageState extends State<MapPage> {
 
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, result) => tabCtrl.animateTo(0),
+      onPopInvokedWithResult: (didPop, result) {
+        if (canPop) {
+          tabCtrl.animateTo(0);
+        }
+      },
       child: Scaffold(
         body: _buildMap(context),
       ),
@@ -121,7 +127,11 @@ class MapPageState extends State<MapPage> {
                 transBloc, favStops, mapCtrl, _sendDirectionInfoRequest),
           ),
         ),
-        DirectionInfoViewer(),
+        DirectionInfoViewer(
+          (status) => setState(() {
+            canPop = status == ViewerStatus.noData;
+          }),
+        ),
         RichAttributionWidget(
           // Include a stylish prebuilt attribution widget that meets all requirments
           attributions: [

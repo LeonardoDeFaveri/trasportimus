@@ -9,10 +9,12 @@ import 'package:trasportimus/widgets/map/direction_details.dart';
 import 'package:trasportimus/widgets/map/direction_tile.dart';
 import 'package:trasportimus_repository/model/model.dart' as m;
 
-enum Status { all, single, pending, error, noData }
+enum ViewerStatus { all, single, pending, error, noData }
 
 class DirectionInfoViewer extends StatefulWidget {
-  const DirectionInfoViewer({super.key});
+  final void Function(ViewerStatus) popEnabler;
+
+  const DirectionInfoViewer(this.popEnabler, {super.key});
 
   @override
   State<StatefulWidget> createState() => DirectionInfoViewerState();
@@ -24,7 +26,7 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
   late AppLocalizations loc;
   late m.DirectionInfo? info;
   late DateTime refDateTime;
-  late Status status;
+  late ViewerStatus status;
   late tb.TransportEvent? event;
   late bool ignoreNextData;
   late m.Way? selected;
@@ -34,7 +36,7 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
     super.initState();
     transBloc = context.read<tb.TransportBloc>();
     prefsBloc = context.read<pb.PrefsBloc>();
-    status = Status.noData;
+    status = ViewerStatus.noData;
     ignoreNextData = false;
   }
 
@@ -54,7 +56,7 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
             if (state is tb.TransportStillFetching &&
                 state.event is tb.FetchDirectionInfo) {
               setState(() {
-                status = Status.pending;
+                status = ViewerStatus.pending;
               });
             } else if (state is tb.TransportFetchedDirectionInfo) {
               if (ignoreNextData) {
@@ -65,34 +67,37 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
                 setState(() {
                   info = state.directionInfo;
                   refDateTime = state.refDateTime;
-                  status = Status.all;
+                  status = ViewerStatus.all;
                 });
               }
             } else if (state is tb.TransportFetchFailed &&
                 state.event is tb.FetchDirectionInfo) {
               setState(() {
-                status = Status.error;
+                status = ViewerStatus.error;
                 event = state.event;
               });
             }
+            widget.popEnabler(status);
           },
         ),
       ],
       child: PopScope(
-          canPop: false,
-          onPopInvokedWithResult: (didPop, result) {
-            if (status == Status.single) {
-              setState(() {
-                status = Status.all;
-              });
-            } else {
-              setState(() {
-                ignoreNextData = status == Status.pending;
-                status = Status.noData;
-              });
-            }
-          },
-          child: _buildDraggableScrollSheet(context)),
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (status == ViewerStatus.single) {
+            setState(() {
+              status = ViewerStatus.all;
+            });
+          } else {
+            setState(() {
+              ignoreNextData = status == ViewerStatus.pending;
+              status = ViewerStatus.noData;
+            });
+          }
+          widget.popEnabler(status);
+        },
+        child: _buildDraggableScrollSheet(context),
+      ),
     );
   }
 
@@ -114,7 +119,7 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
       ),
     ];
 
-    if (status == Status.single) {
+    if (status == ViewerStatus.single) {
       appBarChildren.add(
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -126,7 +131,7 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
             TransportIndicator(selected!),
             IconButton(
               onPressed: () => setState(() {
-                status = Status.all;
+                status = ViewerStatus.all;
               }),
               icon: Icon(MingCuteIcons.mgc_close_circle_line),
             )
@@ -140,24 +145,24 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
     double maxChildSize, initialChildSize;
     Widget child;
     switch (status) {
-      case Status.noData:
+      case ViewerStatus.noData:
         maxChildSize = 0.15;
         initialChildSize = 0.03;
         child = _buildNoDataView(context, theme);
         break;
-      case Status.pending:
+      case ViewerStatus.pending:
         maxChildSize = 0.15;
         initialChildSize = 0.15;
         child = _buildPendingView(context, theme);
-      case Status.error:
+      case ViewerStatus.error:
         maxChildSize = 0.2;
         initialChildSize = 0.2;
         child = _buildErrorView(context, theme);
-      case Status.all:
+      case ViewerStatus.all:
         maxChildSize = 0.6;
         initialChildSize = 0.6;
         child = _buildAllView(context, theme);
-      case Status.single:
+      case ViewerStatus.single:
         maxChildSize = 0.8;
         initialChildSize = 0.8;
         child = _buildSingleView(context, theme);
@@ -243,7 +248,7 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
         return GestureDetector(
           onTap: () => setState(() {
             selected = ways[index];
-            status = Status.single;
+            status = ViewerStatus.single;
           }),
           child: DirectionTile(ways[index], refDateTime),
         );
