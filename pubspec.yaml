@@ -63,6 +63,7 @@ dependencies:
   flutter_map_marker_cluster: ^1.4.0
   fuzzywuzzy: ^1.2.0
   dotted_line: ^3.2.3
+  google_polyline_algorithm: ^3.1.0
 
 dev_dependencies:
   flutter_launcher_icons: "^0.14.1"

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -8,13 +10,15 @@ import 'package:trasportimus/utils.dart';
 import 'package:trasportimus/widgets/map/direction_details.dart';
 import 'package:trasportimus/widgets/map/direction_tile.dart';
 import 'package:trasportimus_repository/model/model.dart' as m;
+import 'package:trasportimus_repository/model/model.dart';
 
 enum ViewerStatus { all, single, pending, error, noData }
 
 class DirectionInfoViewer extends StatefulWidget {
+  final StreamController<Way?> stream;
   final void Function(ViewerStatus) popEnabler;
 
-  const DirectionInfoViewer(this.popEnabler, {super.key});
+  const DirectionInfoViewer(this.stream, this.popEnabler, {super.key});
 
   @override
   State<StatefulWidget> createState() => DirectionInfoViewerState();
@@ -88,6 +92,7 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
             setState(() {
               status = ViewerStatus.all;
             });
+            widget.stream.add(null);
           } else {
             setState(() {
               ignoreNextData = status == ViewerStatus.pending;
@@ -132,12 +137,14 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
             IconButton(
               onPressed: () => setState(() {
                 status = ViewerStatus.all;
+                widget.stream.add(null);
               }),
               icon: Icon(MingCuteIcons.mgc_close_circle_line),
             )
           ],
         ),
       );
+      widget.stream.add(selected!);
       appBarHeight = 48;
     }
 

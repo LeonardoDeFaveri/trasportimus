@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -10,6 +12,7 @@ import 'package:trasportimus/blocs/prefs/prefs_bloc.dart' as pb;
 import 'package:trasportimus/blocs/transport/transport_bloc.dart' as tb;
 import 'package:trasportimus/location_utils.dart';
 import 'package:trasportimus/pages/stop_trips_page.dart';
+import 'package:trasportimus/widgets/map/decode_polyline.dart';
 import 'package:trasportimus/widgets/map/direction_info_viewer.dart';
 import 'package:trasportimus/widgets/map/hints_type.dart';
 import 'package:trasportimus/widgets/map/search_bar.dart';
@@ -31,6 +34,7 @@ class MapPageState extends State<MapPage> {
   late final tb.TransportBloc transBloc;
   late final pb.PrefsBloc prefsBloc;
   late final MapController mapCtrl;
+  late final StreamController<Way?> pathsStream;
   late bool shouldAlignPosition;
   late bool shouldAlignDirection;
   late LatLng? currentPosition;
@@ -38,6 +42,7 @@ class MapPageState extends State<MapPage> {
   late Set<Stop> favStops;
   late TabController tabCtrl;
   late bool canPop;
+  late Way? previousData;
 
   @override
   void initState() {
@@ -45,12 +50,14 @@ class MapPageState extends State<MapPage> {
     transBloc = context.read<tb.TransportBloc>();
     transBloc.add(tb.FetchStops());
     prefsBloc = context.read<pb.PrefsBloc>();
+    pathsStream = StreamController.broadcast();
     prefsBloc.add(pb.FetchStops());
     mapCtrl = MapController();
     shouldAlignPosition = false;
     shouldAlignDirection = false;
     currentZoom = initialZoom;
     canPop = true;
+    previousData = null;
 
     favStops = {};
 
@@ -113,6 +120,7 @@ class MapPageState extends State<MapPage> {
           minNativeZoom: 1,
           minZoom: 5,
         ),
+        _buildTripLayer(context),
         _buildLocationMarkerLayer(context),
         _buildMarkerLayer(context),
         Positioned(
@@ -128,6 +136,7 @@ class MapPageState extends State<MapPage> {
           ),
         ),
         DirectionInfoViewer(
+          pathsStream,
           (status) => setState(() {
             canPop = status == ViewerStatus.noData;
           }),
@@ -361,7 +370,7 @@ class MapPageState extends State<MapPage> {
             }
             return MarkerClusterLayerWidget(
               options: MarkerClusterLayerOptions(
-                maxClusterRadius: 45,
+                maxClusterRadius: 45 * (20 - currentZoom.floor()),
                 size: const Size(50, 50),
                 alignment: Alignment.center,
                 padding: const EdgeInsets.all(50),
@@ -458,6 +467,53 @@ class MapPageState extends State<MapPage> {
           ),
         ], child: StopTripsPage(stop)),
       ),
+    );
+  }
+  
+  Widget _buildTripLayer(BuildContext context) {
+    return StreamBuilder(
+      stream: pathsStream.stream,
+      
+      builder: (context, snapshot) {
+        List<Polyline> lines = [];
+        if (snapshot.data != null) {
+          var way = snapshot.data!;
+          for (var step in way.steps) {
+            var line = decodePolyline(step.polyline).unpackPolyline();
+            bool dotted = true;
+            Color color = Colors.grey;
+            if (step.travelMode is Transit) {
+              var mode = step.travelMode as Transit;
+              dotted = false;
+              color = mode.info.getRouteColor();
+              if (color == Colors.white) {
+                color = Colors.black12;
+              } else if (color == Colors.black) {
+                color = Theme.of(context).colorScheme.primary;
+              }
+            }
+            lines.add(Polyline(
+              points: line,
+              color: color,
+              pattern: dotted ? StrokePattern.dotted() : StrokePattern.solid(),
+              strokeWidth: 10,
+              strokeJoin: StrokeJoin.round,
+              strokeCap: StrokeCap.round
+            ));
+          }
+          if (snapshot.data != previousData) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              var bounds = LatLngBounds(way.bounds.northEast, way.bounds.southWest);
+              mapCtrl.fitCamera(CameraFit.bounds(bounds: bounds));
+            });
+          }
+          previousData = snapshot.data;
+        }
+        return PolylineLayer(
+          cullingMargin: null,
+          polylines: lines,
+        );
+      },
     );
   }
 }
