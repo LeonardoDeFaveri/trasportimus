@@ -37,7 +37,8 @@ class OsmApiClient {
       var locationJson = json.decode(response.body) as List<dynamic>;
       for (Map<String, dynamic> location in locationJson) {
         // Filter out non-places. Should look for a better way
-        if (location['class'] == 'place') {
+        var locationClass = location['class'];
+        if (locationClass == 'place') {
           // Filter out places outside of valid areas
           var addr = location['address'] ?? {};
           var state = addr['state'] ?? '';
@@ -45,6 +46,11 @@ class OsmApiClient {
               state == 'Lombardia' ||
               state == 'Trentino-Alto Adige' ||
               state == '') {
+            locations.add(Location.fromJson(location));
+          }
+        } else if (locationClass == 'boundary') {
+          var addrType = location['addresstype'];
+          if (addrType == 'city' || addrType == 'village' || addrType == 'town') {
             locations.add(Location.fromJson(location));
           }
         }
