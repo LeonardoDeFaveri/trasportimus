@@ -97,12 +97,12 @@ final class LoaderExpanded extends StatelessWidget {
     return ListTile(
       leading: LocationTile(),
       title: Shimmer.fromColors(
-        baseColor: Colors.grey[300]!, 
+        baseColor: Colors.grey[300]!,
         highlightColor: Colors.grey[200]!,
         child: Align(
           heightFactor: 1.2,
           alignment: Alignment.centerLeft,
-           child: Container(
+          child: Container(
             width: 100,
             height: 16,
             margin: EdgeInsets.only(top: 8),
@@ -111,12 +111,12 @@ final class LoaderExpanded extends StatelessWidget {
         ),
       ),
       subtitle: Shimmer.fromColors(
-        baseColor: Colors.grey[300]!, 
+        baseColor: Colors.grey[300]!,
         highlightColor: Colors.grey[200]!,
         child: Align(
           heightFactor: 1.2,
           alignment: Alignment.centerLeft,
-           child: Container(
+          child: Container(
             width: 150,
             height: 16,
             color: Colors.white,

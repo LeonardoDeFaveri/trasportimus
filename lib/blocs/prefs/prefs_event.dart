@@ -66,3 +66,19 @@ final class AddStop extends PrefsEvent {
   @override
   List<Object> get props => [stop];
 }
+
+final class GetLocale extends PrefsEvent {
+  const GetLocale();
+
+  @override
+  List<Object> get props => [];
+}
+
+final class SetLocale extends PrefsEvent {
+  final String locale;
+
+  const SetLocale(this.locale);
+
+  @override
+  List<Object> get props => [locale];
+}

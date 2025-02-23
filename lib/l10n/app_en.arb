@@ -262,5 +262,8 @@
                 "type": "String"
             }
         }
-    }
+    },
+
+    "settings": "Settings",
+    "language": "Language"
 }

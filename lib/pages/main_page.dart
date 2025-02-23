@@ -15,7 +15,7 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-const String title = 'Bon Voyage!';
+const String title = 'Trasportimus';
 
 class _MainPageState extends State<MainPage> {
   late HashSet<model.Route> routes;
@@ -38,7 +38,6 @@ class _MainPageState extends State<MainPage> {
           title,
           style: Theme.of(context).textTheme.headlineLarge,
         ),
-        centerTitle: true,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: Defaults.gradient,

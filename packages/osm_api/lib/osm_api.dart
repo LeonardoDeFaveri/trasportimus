@@ -50,7 +50,9 @@ class OsmApiClient {
           }
         } else if (locationClass == 'boundary') {
           var addrType = location['addresstype'];
-          if (addrType == 'city' || addrType == 'village' || addrType == 'town') {
+          if (addrType == 'city' ||
+              addrType == 'village' ||
+              addrType == 'town') {
             locations.add(Location.fromJson(location));
           }
         }

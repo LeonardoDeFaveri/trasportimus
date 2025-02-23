@@ -541,24 +541,38 @@ class MapPageState extends State<MapPage> {
               size: 45,
             ),
           ));
-          markers.add(Marker(
-            height: 20,
-            width: 20,
-            point: way.departurePointCoords,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
-                color: Colors.grey
-              ),
-            )
-          ));
+          markers.add(_buildTripMarker(way.departurePointCoords, size: 20));
+          for (var (i, step) in way.steps.indexed) {
+            if (i == 0) {
+              markers.add(_buildTripMarker(step.endLocation));
+            } else if (i == way.steps.length - 1) {
+              markers.add(_buildTripMarker(step.startLocation));
+            } else {
+              markers.add(_buildTripMarker(step.startLocation));
+              markers.add(_buildTripMarker(step.endLocation));
+            }
+          }
         }
         return MarkerLayer(
           markers: markers,
           rotate: true,
         );
       },
+    );
+  }
+
+  Marker _buildTripMarker(LatLng point, {double? size}) {
+    return Marker(
+      height: size ?? 14,
+      width: size ?? 14,
+      point: point,
+      child: Container(
+        decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 2),
+            color: Colors.grey,
+        ),
+      ),
     );
   }
 }

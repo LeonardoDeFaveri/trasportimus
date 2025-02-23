@@ -81,5 +81,8 @@
     "hours": "{h} ore",
     "time": "{h}h {min}min",
     "intermediateStop": "1 fermata con trasporto pubblic ({time})",
-    "intermediateStops": "{stops} fermate con trasporto pubblic ({time})"
+    "intermediateStops": "{stops} fermate con trasporto pubblic ({time})",
+
+    "settings": "Impostazioni",
+    "language": "Lingua"
 }

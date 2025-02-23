@@ -62,6 +62,16 @@ class PrefsBloc extends Bloc<PrefsEvent, PrefsState> {
       _saveStops(stops);
       emit(PrefsStopsUpdated(stops));
     });
+
+    on<GetLocale>((event, emit) {
+      var locale = prefs.getString('locale');
+      emit(PrefsLocaleRead(locale));
+    });
+
+    on<SetLocale>((event, emit) {
+      prefs.setString('locale', event.locale);
+      emit(PrefsLocaleUpdated(event.locale));
+    });
   }
 
   HashSet<m.Route> _fetchRoutes() {

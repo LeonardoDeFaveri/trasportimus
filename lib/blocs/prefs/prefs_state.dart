@@ -56,3 +56,21 @@ final class PrefsStopsUpdated extends PrefsState {
   @override
   List<Object> get props => [stops];
 }
+
+final class PrefsLocaleRead extends PrefsState {
+  final String? locale;
+
+  const PrefsLocaleRead(this.locale);
+
+  @override
+  List<Object> get props => [locale ?? ''];
+}
+
+final class PrefsLocaleUpdated extends PrefsState {
+  final String locale;
+
+  const PrefsLocaleUpdated(this.locale);
+
+  @override
+  List<Object> get props => [locale];
+}

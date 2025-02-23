@@ -173,4 +173,5 @@ class SearchHintsViewerState extends State<SearchHintsViewer> {
 }
 
 final class YourPosition {}
+
 final class Loader {}
