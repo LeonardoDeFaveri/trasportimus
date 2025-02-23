@@ -167,11 +167,11 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
         child = _buildErrorView(context, theme);
       case ViewerStatus.all:
         maxChildSize = 0.6;
-        initialChildSize = 0.6;
+        initialChildSize = 0.5;
         child = _buildAllView(context, theme);
       case ViewerStatus.single:
-        maxChildSize = 0.8;
-        initialChildSize = 0.8;
+        maxChildSize = 1;
+        initialChildSize = 0.6;
         child = _buildSingleView(context, theme);
     }
 

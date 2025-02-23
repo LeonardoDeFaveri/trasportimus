@@ -351,7 +351,7 @@ class DirectionDetailsState extends State<DirectionDetails> {
 
   Widget _buildTransitConnector(Color routeColor) {
     if (routeColor == Colors.white) {
-      routeColor = Colors.black12;
+      routeColor = Colors.grey[300]!;
     }
     return Connector.solidLine(
       color: routeColor,
@@ -379,7 +379,7 @@ class DirectionDetailsState extends State<DirectionDetails> {
 
     var routeColor = token.transitInfo.getRouteColor();
     if (routeColor == Colors.white) {
-      routeColor = Colors.black12;
+      routeColor = Colors.grey[300]!;
     }
 
     return Stack(
@@ -416,7 +416,7 @@ class DirectionDetailsState extends State<DirectionDetails> {
   Widget _buildTransitStopLocationIndicator(TransitStopLocation token) {
     var routeColor = token.transitInfo.getRouteColor();
     if (routeColor == Colors.white) {
-      routeColor = Colors.black12;
+      routeColor = Colors.grey[300]!;
     }
 
     return Stack(

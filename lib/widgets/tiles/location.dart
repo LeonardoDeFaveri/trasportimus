@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:osm_api/model/location.dart';
+import 'package:shimmer/shimmer.dart';
 
 final class LocationTile extends StatelessWidget {
   const LocationTile({super.key});
@@ -84,6 +85,46 @@ final class LocationExpanded extends StatelessWidget {
       horizontalTitleGap: 5,
       isThreeLine: true,
       onTap: () => onTap(location),
+    );
+  }
+}
+
+final class LoaderExpanded extends StatelessWidget {
+  const LoaderExpanded({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: LocationTile(),
+      title: Shimmer.fromColors(
+        baseColor: Colors.grey[300]!, 
+        highlightColor: Colors.grey[200]!,
+        child: Align(
+          heightFactor: 1.2,
+          alignment: Alignment.centerLeft,
+           child: Container(
+            width: 100,
+            height: 16,
+            margin: EdgeInsets.only(top: 8),
+            color: Colors.white,
+          ),
+        ),
+      ),
+      subtitle: Shimmer.fromColors(
+        baseColor: Colors.grey[300]!, 
+        highlightColor: Colors.grey[200]!,
+        child: Align(
+          heightFactor: 1.2,
+          alignment: Alignment.centerLeft,
+           child: Container(
+            width: 150,
+            height: 16,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      isThreeLine: true,
+      horizontalTitleGap: 5,
     );
   }
 }

@@ -64,6 +64,7 @@ dependencies:
   fuzzywuzzy: ^1.2.0
   dotted_line: ^3.2.3
   google_polyline_algorithm: ^3.1.0
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_launcher_icons: "^0.14.1"

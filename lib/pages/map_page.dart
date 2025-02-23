@@ -121,6 +121,7 @@ class MapPageState extends State<MapPage> {
           minZoom: 5,
         ),
         _buildTripLayer(context),
+        _buildStartStopMarkers(context),
         _buildLocationMarkerLayer(context),
         _buildMarkerLayer(context),
         Positioned(
@@ -132,7 +133,11 @@ class MapPageState extends State<MapPage> {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 30, vertical: 50),
             child: MapSearchBar(
-                transBloc, favStops, mapCtrl, _sendDirectionInfoRequest),
+              transBloc,
+              favStops,
+              mapCtrl,
+              _sendDirectionInfoRequest,
+            ),
           ),
         ),
         DirectionInfoViewer(
@@ -456,7 +461,7 @@ class MapPageState extends State<MapPage> {
     return null;
   }
 
-  /// When a stop marker is tapped go to the relative StopTripPage.
+  /// When a stop marker is tapped go to the relative `StopTripPage`.
   void _goToStopPage(BuildContext context2, Stop stop) {
     Navigator.push(
       context2,
@@ -469,11 +474,12 @@ class MapPageState extends State<MapPage> {
       ),
     );
   }
-  
+
+  /// Builds the polyline that shows the overall path of a trip from source
+  /// to dest.
   Widget _buildTripLayer(BuildContext context) {
     return StreamBuilder(
       stream: pathsStream.stream,
-      
       builder: (context, snapshot) {
         List<Polyline> lines = [];
         if (snapshot.data != null) {
@@ -487,23 +493,24 @@ class MapPageState extends State<MapPage> {
               dotted = false;
               color = mode.info.getRouteColor();
               if (color == Colors.white) {
-                color = Colors.black12;
+                color = Colors.grey[300]!;
               } else if (color == Colors.black) {
                 color = Theme.of(context).colorScheme.primary;
               }
             }
             lines.add(Polyline(
-              points: line,
-              color: color,
-              pattern: dotted ? StrokePattern.dotted() : StrokePattern.solid(),
-              strokeWidth: 10,
-              strokeJoin: StrokeJoin.round,
-              strokeCap: StrokeCap.round
-            ));
+                points: line,
+                color: color,
+                pattern:
+                    dotted ? StrokePattern.dotted() : StrokePattern.solid(),
+                strokeWidth: 10,
+                strokeJoin: StrokeJoin.round,
+                strokeCap: StrokeCap.round));
           }
           if (snapshot.data != previousData) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              var bounds = LatLngBounds(way.bounds.northEast, way.bounds.southWest);
+              var bounds =
+                  LatLngBounds(way.bounds.northEast, way.bounds.southWest);
               mapCtrl.fitCamera(CameraFit.bounds(bounds: bounds));
             });
           }
@@ -512,6 +519,44 @@ class MapPageState extends State<MapPage> {
         return PolylineLayer(
           cullingMargin: null,
           polylines: lines,
+        );
+      },
+    );
+  }
+
+  Widget _buildStartStopMarkers(BuildContext context) {
+    return StreamBuilder(
+      stream: pathsStream.stream,
+      builder: (context, snapshot) {
+        List<Marker> markers = [];
+        if (snapshot.data != null) {
+          var way = snapshot.data!;
+          markers.add(Marker(
+            height: 500,
+            width: 500,
+            point: way.arrivalPointCoords,
+            child: const Icon(
+              MingCuteIcons.mgc_location_fill,
+              color: Colors.red,
+              size: 45,
+            ),
+          ));
+          markers.add(Marker(
+            height: 20,
+            width: 20,
+            point: way.departurePointCoords,
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2),
+                color: Colors.grey
+              ),
+            )
+          ));
+        }
+        return MarkerLayer(
+          markers: markers,
+          rotate: true,
         );
       },
     );

@@ -442,9 +442,9 @@ class MapSearchBarState extends State<MapSearchBar> {
                       child: ElevatedButton(
                           style: ButtonStyle(
                             shape: WidgetStatePropertyAll(
-                                RoundedRectangleBorder(
-                                    borderRadius: Defaults.borderRadius,
-                                ),
+                              RoundedRectangleBorder(
+                                borderRadius: Defaults.borderRadius,
+                              ),
                             ),
                             foregroundColor: WidgetStatePropertyAll(
                                 theme.colorScheme.onPrimary),

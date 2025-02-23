@@ -190,8 +190,8 @@ class TransitTile extends StatelessWidget {
         borderRadius: const BorderRadius.all(
           Radius.circular(5),
         ),
-        border: showBorder ? Border.all(color: Colors.black12) : null,
-        color: showBorder ? Colors.black12 : color,
+        border: showBorder ? Border.all(color: Colors.grey[300]!) : null,
+        color: showBorder ? Colors.grey[300]! : color,
       ),
       margin: EdgeInsets.all(showBorder ? 2 : 3),
       child: Column(

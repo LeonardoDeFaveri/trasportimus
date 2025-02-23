@@ -33,6 +33,7 @@ class SearchHintsViewerState extends State<SearchHintsViewer> {
   late Set<Stop> favStops;
   late List<Location> locations;
   late String key;
+  late bool waitingForLocations;
 
   @override
   void initState() {
@@ -40,6 +41,7 @@ class SearchHintsViewerState extends State<SearchHintsViewer> {
     favStops = widget.favStops;
     locations = [];
     key = "";
+    waitingForLocations = false;
   }
 
   @override
@@ -63,6 +65,15 @@ class SearchHintsViewerState extends State<SearchHintsViewer> {
               if (state is OsmData && state.key == key) {
                 setState(() {
                   locations = state.locations;
+                  waitingForLocations = false;
+                });
+              } else if (state is OsmStillFetching) {
+                setState(() {
+                  waitingForLocations = true;
+                });
+              } else {
+                setState(() {
+                  waitingForLocations = false;
                 });
               }
             },
@@ -81,6 +92,9 @@ class SearchHintsViewerState extends State<SearchHintsViewer> {
               var filteredStops = _filterStops(snapshot.data!);
               all.addAll(filteredStops);
               all.addAll(locations);
+              if (waitingForLocations) {
+                all.add(Loader());
+              }
             } else {
               key = "";
             }
@@ -117,13 +131,15 @@ class SearchHintsViewerState extends State<SearchHintsViewer> {
                   } else if (el is YourPosition) {
                     return YourPositionExpanded(
                         onTap: () => widget.onTap(YourPositionHint()));
-                  } else {
+                  } else if (el is Location) {
                     return LocationExpanded(
-                      el as Location,
+                      el,
                       onTap: (location) {
                         widget.onTap(LocationHint(location));
                       },
                     );
+                  } else {
+                    return LoaderExpanded();
                   }
                 },
               ),
@@ -157,3 +173,4 @@ class SearchHintsViewerState extends State<SearchHintsViewer> {
 }
 
 final class YourPosition {}
+final class Loader {}
