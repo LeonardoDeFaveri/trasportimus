@@ -12,7 +12,7 @@ class SettingsPage extends StatefulWidget {
   State<StatefulWidget> createState() => SettingsPageState();
 }
 
-const supportedLocales = {'it': 'Italiano', 'en': 'English'};
+const supportedLocales = {'it': 'Italiano', 'en': 'English', 'de': 'Deutsch'};
 
 class SettingsPageState extends State<SettingsPage> {
   late final PrefsBloc prefs;
@@ -100,7 +100,7 @@ class SettingsPageState extends State<SettingsPage> {
                       );
                     },
                     promptDelegate: ChoicePrompt.delegatePopupDialog(
-                      maxHeightFactor: 0.17,
+                      maxHeightFactor: 0.25,
                       shape: RoundedRectangleBorder(borderRadius: Defaults.borderRadius),
                     ),
                     anchorBuilder: ChoiceAnchor.create(inline: true),

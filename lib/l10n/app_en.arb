@@ -126,7 +126,7 @@
     "towards": "To",
 
     "noRouteMsg": "Oh... I've found no routes",
-    "noRouteHint": "Try with another time schedule",
+    "noRouteHint": "Try a different schedule",
     "noDataTitle": "Oh nooo!",
     "noDataErr": "I could not retrieve any data :-(",
     "noDataRetryTitle": "Oh-oh!",

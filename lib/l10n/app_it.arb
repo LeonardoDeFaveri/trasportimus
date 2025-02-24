@@ -50,7 +50,7 @@
     "noDataTitle": "Oh nooo!",
     "noDataErr": "Non riesco a recuperare i dati :-(",
     "noDataRetryTitle": "Oh-oh!",
-    "noDataRetryErr": "Non sono risucito a recuperare i dati, ma potresti riprovare!",
+    "noDataRetryErr": "Non sono riuscito a recuperare i dati, ma potresti riprovare!",
 
     "retry": "Riprova",
 
@@ -62,13 +62,13 @@
     "routeEnd": "Scegli una destinazione",
     "yourPosition": "La tua posizione",
     "routePlan": "Pianifica",
-    "noDirectionInfo": "Le direzioni appariranno qui",
+    "noDirectionInfo": "Le indicazioni appariranno qui",
     "fullTimeInfo": "{h} h {min} min",
     "shortTimeInfo": "{min} min",
     "bus": "BUS",
     "rail": "TRENO",
     "cableway": "FUN",
-    "noStepInfo": "Non sono disponibili informazioni sul tragitto",
+    "noStepInfo": "Nessuna informazione disponibile sul percorso",
     "stepInfo": "Partenza prevista: {time} da {place}",
     "onFootInfo": "Circa {time} a piedi ({distance})",
     "onFootInfoWait": "Circa {time} a piedi ({distance}), poi attendi fino a {wait}",
@@ -80,8 +80,8 @@
     "hour": "1 ora",
     "hours": "{h} ore",
     "time": "{h}h {min}min",
-    "intermediateStop": "1 fermata con trasporto pubblic ({time})",
-    "intermediateStops": "{stops} fermate con trasporto pubblic ({time})",
+    "intermediateStop": "1 fermata con trasporto pubblico ({time})",
+    "intermediateStops": "{stops} fermate con trasporto pubblico ({time})",
 
     "settings": "Impostazioni",
     "language": "Lingua"

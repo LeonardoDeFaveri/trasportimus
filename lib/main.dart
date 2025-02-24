@@ -73,6 +73,8 @@ class MyAppState extends State<MyApp> {
               setState(() {
                 locale = state.locale!;
               });
+            } else {
+              prefsBloc.add(SetLocale(locale));
             }
           } else if (state is PrefsLocaleUpdated) {
             setState(() {
