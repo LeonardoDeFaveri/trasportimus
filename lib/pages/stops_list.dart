@@ -103,11 +103,7 @@ class StopsListState extends State<StopsList> {
         appBar: AppBar(
           title: isSearchActive ? searchBar : baseTitle,
           flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: Defaults.gradient,
-              boxShadow: Defaults.shadows,
-              borderRadius: BorderRadius.circular(10),
-            ),
+            decoration: Defaults.decoration,
           ),
           actions: isSearchActive ? null : actions,
         ),

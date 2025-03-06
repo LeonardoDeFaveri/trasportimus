@@ -9,6 +9,7 @@ android {
     namespace = "com.example.trasportimus"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
+    buildToolsVersion "33.0.2"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

@@ -40,11 +40,7 @@ class SettingsPageState extends State<SettingsPage> {
           style: Theme.of(context).textTheme.headlineLarge,
         ),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: Defaults.gradient,
-            boxShadow: Defaults.shadows,
-            borderRadius: BorderRadius.circular(10),
-          ),
+          decoration: Defaults.decoration,
         ),
       ),
       body: BlocConsumer<PrefsBloc, PrefsState>(
@@ -74,7 +70,8 @@ class SettingsPageState extends State<SettingsPage> {
                 child: Card(
                   clipBehavior: Clip.antiAlias,
                   elevation: 5,
-                  shape: RoundedRectangleBorder(borderRadius: Defaults.borderRadius),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: Defaults.borderRadius),
                   child: PromptedChoice<String>.single(
                     title: loc.language,
                     value: selectedLocale,
@@ -101,7 +98,8 @@ class SettingsPageState extends State<SettingsPage> {
                     },
                     promptDelegate: ChoicePrompt.delegatePopupDialog(
                       maxHeightFactor: 0.25,
-                      shape: RoundedRectangleBorder(borderRadius: Defaults.borderRadius),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: Defaults.borderRadius),
                     ),
                     anchorBuilder: ChoiceAnchor.create(inline: true),
                   ),

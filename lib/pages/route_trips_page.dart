@@ -168,7 +168,6 @@ class RouteTripsPageState extends State<RouteTripsPage> {
                           child: PageView.builder(
                             itemBuilder: (context, index) {
                               m.Trip trip = trips[index];
-                              int lastSeq = _getLastStopSeq(trip);
                               int? predIndex = _getPredTripIndex(trip);
                               m.Trip? pred;
                               if (predIndex != null) {
@@ -178,6 +177,10 @@ class RouteTripsPageState extends State<RouteTripsPage> {
                                         pred.stopTimes.length) {
                                   pred = null;
                                 }
+                              }
+                              int lastSeq = 0;
+                              if (pred == null) {
+                                lastSeq = _getLastStopSeq(trip);
                               }
 
                               var tripTimelineHeader = TripTimelineHeader(

@@ -60,11 +60,8 @@ class RoutesListState extends State<RoutesList> {
           overflow: TextOverflow.ellipsis,
         ),
         flexibleSpace: Container(
-            decoration: BoxDecoration(
-          gradient: Defaults.gradient,
-          boxShadow: Defaults.shadows,
-          borderRadius: BorderRadius.circular(10),
-        )),
+          decoration: Defaults.decoration,
+        ),
       ),
       body: BlocConsumer<TransportBloc, TransportState>(
         bloc: bloc,

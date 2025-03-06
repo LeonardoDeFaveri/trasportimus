@@ -136,6 +136,10 @@ class MapPageState extends State<MapPage> {
               transBloc,
               favStops,
               mapCtrl,
+              () => setState(() {
+                shouldAlignPosition = false;
+                shouldAlignDirection = false;
+              }),
               _sendDirectionInfoRequest,
             ),
           ),
@@ -509,6 +513,10 @@ class MapPageState extends State<MapPage> {
           }
           if (snapshot.data != previousData) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
+              setState(() {
+                shouldAlignPosition = false;
+                shouldAlignDirection = false;
+              });
               var bounds =
                   LatLngBounds(way.bounds.northEast, way.bounds.southWest);
               mapCtrl.fitCamera(CameraFit.bounds(bounds: bounds));
@@ -568,9 +576,9 @@ class MapPageState extends State<MapPage> {
       point: point,
       child: Container(
         decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.white, width: 2),
-            color: Colors.grey,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white, width: 2),
+          color: Colors.grey,
         ),
       ),
     );

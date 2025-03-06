@@ -1,5 +1,3 @@
-library osm_api;
-
 import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 

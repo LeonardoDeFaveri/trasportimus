@@ -56,19 +56,17 @@ class TripTimeline extends StatelessWidget {
       Widget predTimeline = GestureDetector(
         onTap: goToPred != null ? () => goToPred!() : null,
         child: Container(
-          //height: 150,
           margin: EdgeInsets.symmetric(horizontal: 8),
           padding: EdgeInsets.symmetric(horizontal: 8),
           decoration: BoxDecoration(
-              boxShadow: Defaults.shadows,
-              borderRadius: Defaults.borderRadius,
-              border: Border.all(color: Colors.orange, width: 1.5),
-              color: Colors.white),
-          //color: Colors.orange.withAlpha(50),
+            boxShadow: Defaults.shadows,
+            borderRadius: Defaults.borderRadius,
+            border: Border.all(color: Colors.orange, width: 1.5),
+            color: Colors.white,
+          ),
           child: _buildPredTimeline(theme),
         ),
       );
-      //return predTimeline;
 
       return Column(
         mainAxisSize: MainAxisSize.min,
@@ -101,13 +99,14 @@ class TripTimeline extends StatelessWidget {
       Widget actualTime = Text(
         formatTime(actualArrival.hour, actualArrival.minute),
         style: theme.textTheme.bodyLarge!.copyWith(
-            color: delay < 0
-                ? Colors.cyan
-                : delay == 0
-                    ? Colors.green
-                    : delay < 5
-                        ? Colors.orange
-                        : Colors.red),
+          color: delay < 0
+              ? Colors.cyan
+              : delay == 0
+                  ? Colors.green
+                  : delay < 5
+                      ? Colors.orange
+                      : Colors.red,
+        ),
       );
       return Column(
         mainAxisSize: MainAxisSize.min,
@@ -129,13 +128,14 @@ class TripTimeline extends StatelessWidget {
     Widget actualTime = Text(
       formatTime(actualArrival.hour, actualArrival.minute),
       style: theme.textTheme.bodyLarge!.copyWith(
-          color: delay < 0
-              ? Colors.cyan
-              : delay == 0
-                  ? Colors.green
-                  : delay < 5
-                      ? Colors.orange
-                      : Colors.red),
+        color: delay < 0
+            ? Colors.cyan
+            : delay == 0
+                ? Colors.green
+                : delay < 5
+                    ? Colors.orange
+                    : Colors.red,
+      ),
     );
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -171,7 +171,7 @@ class TripTimeline extends StatelessWidget {
           StopTime st = trip.stopTimes[index];
 
           Widget child;
-          if (markedItems.contains(st.stopSequence) && pred == null) {
+          if (markedItems.contains(st.stopSequence)) {
             child = markedItemBuilder(context2, st);
           } else {
             child = itemBuilder(context2, st);

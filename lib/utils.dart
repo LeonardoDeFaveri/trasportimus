@@ -62,13 +62,13 @@ int compareTripsAtStop(m.Trip t1, m.Trip t2, m.Stop stop) {
   return st1.arrivalTime.compareTo(st2.arrivalTime);
 }
 
+// Tries to find the first stoptime that has not been visited. If all have been
+// visited, it returns the last that has been visited.
 m.StopTime getStopSt(m.Trip trip, m.Stop stop, DateTime refTime) {
   m.StopTime? res;
   for (m.StopTime st in trip.stopTimes) {
     if (st.stop.id == stop.id) {
       res = st;
-      // Tries to find the first stoptime that has not been visited, otherwise
-      // should return the last that has been visited
       if ((st.arrivalTime.isAfter(refTime) && trip.lastUpdate == null) ||
           (st.stopSequence > trip.lastSequenceDetection &&
               trip.lastUpdate != null)) {
@@ -114,7 +114,10 @@ class Defaults {
   static final BoxDecoration decoration = BoxDecoration(
     gradient: Defaults.gradient,
     boxShadow: Defaults.shadows,
-    borderRadius: Defaults.borderRadius,
+    borderRadius: BorderRadius.only(
+      bottomLeft: Radius.circular(10),
+      bottomRight: Radius.circular(10),
+    ),
   );
 
   static final ThemeData themeData = ThemeData(
@@ -192,7 +195,7 @@ class Defaults {
       elevation: 0,
       behavior: SnackBarBehavior.floating,
       backgroundColor: Colors.transparent,
-      duration: const Duration(seconds: 20),
+      duration: const Duration(seconds: 5),
       content: content,
     );
     ScaffoldMessenger.of(context)
@@ -214,7 +217,7 @@ class Defaults {
       elevation: 0,
       behavior: SnackBarBehavior.floating,
       backgroundColor: Colors.transparent,
-      duration: const Duration(seconds: 20),
+      duration: const Duration(seconds: 5),
       content: content,
     );
     ScaffoldMessenger.of(context)
@@ -232,7 +235,7 @@ class Defaults {
       elevation: 0,
       behavior: SnackBarBehavior.floating,
       backgroundColor: Colors.transparent,
-      duration: const Duration(seconds: 20),
+      duration: const Duration(seconds: 5),
       content: content,
     );
     ScaffoldMessenger.of(context)

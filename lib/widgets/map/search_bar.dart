@@ -23,9 +23,14 @@ class MapSearchBar extends StatefulWidget {
   final TransportBloc transBloc;
   final Set<Stop> favStops;
   final MapController mapCtrl;
+
+  /// This function allows the caller to provide a function to be called
+  /// immediately after a search hint is clicked.
+  final void Function() onTap;
   final void Function(List<HintType> routeComponents, DateTime refTime) planner;
 
-  const MapSearchBar(this.transBloc, this.favStops, this.mapCtrl, this.planner,
+  const MapSearchBar(
+      this.transBloc, this.favStops, this.mapCtrl, this.onTap, this.planner,
       {super.key});
 
   @override
@@ -266,6 +271,7 @@ class MapSearchBarState extends State<MapSearchBar> {
             stops,
             widget.favStops,
             onTap: (hint) {
+              widget.onTap();
               double lat = 0, lon = 0;
               if (hint is StopHint) {
                 lat = hint.stop.latitude;

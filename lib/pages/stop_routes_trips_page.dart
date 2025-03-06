@@ -162,19 +162,23 @@ class RouteTripsPageForStopState extends State<RouteTripsPageForStop> {
                           child: PageView.builder(
                             itemBuilder: (context, idx) {
                               m.Trip trip = trips[idx];
-                              int lastSeq = _getLastStopSeq(trip);
-                              int stopSeq =
-                                  getStopSt(trip, widget.stop, refTime)
-                                      .stopSequence;
                               int? predIndex = _getPredTripIndex(trip);
                               m.Trip? pred;
                               if (predIndex != null) {
                                 pred = trips[predIndex];
                                 if (pred.lastUpdate == null ||
                                     pred.lastSequenceDetection ==
-                                        pred.stopTimes.length) {
+                                        pred.stopTimes.length ||
+                                    trip.lastUpdate != null) {
                                   pred = null;
                                 }
+                              }
+                              int stopSeq =
+                                  getStopSt(trip, widget.stop, refTime)
+                                      .stopSequence;
+                              int lastSeq = 0;
+                              if (pred == null) {
+                                lastSeq = _getLastStopSeq(trip);
                               }
 
                               var tripTimelineHeader = TripTimelineHeader(
@@ -282,7 +286,7 @@ class RouteTripsPageForStopState extends State<RouteTripsPageForStop> {
       setState(() {
         isAutoReloading = true;
       });
-      transBloc.add(tb.FetchTripsForStop(widget.stop, offTime));
+      //transBloc.add(tb.FetchTripsForStop(widget.stop, offTime));
     });
   }
 
@@ -304,6 +308,9 @@ class RouteTripsPageForStopState extends State<RouteTripsPageForStop> {
         ));
   }
 
+  /// Returns the sequence number [0-indexed] of the last stop visited. Either
+  /// the number is taken directly from `trip` or it is derived from programmed
+  /// schedule and current time information.
   int _getLastStopSeq(m.Trip trip) {
     if (trip.lastUpdate != null) {
       return trip.lastSequenceDetection;

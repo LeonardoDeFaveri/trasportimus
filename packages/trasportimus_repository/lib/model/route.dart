@@ -55,7 +55,10 @@ class Route implements Equatable {
   }
 
   static String _writeColor(Color value) {
-    return format("{:0>2}{:0>2}{:0>2}", value.red.toRadixString(16),
-        value.green.toRadixString(16), value.blue.toRadixString(16));
+    int red = (value.r * value.a * 255).floor();
+    int green = (value.g * value.a * 255).floor();
+    int blue = (value.b * value.a * 255).floor();
+    return format("{:0>2}{:0>2}{:0>2}", red.toRadixString(16),
+        green.toRadixString(16), blue.toRadixString(16));
   }
 }
