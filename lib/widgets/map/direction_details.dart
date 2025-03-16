@@ -171,7 +171,8 @@ class DirectionDetailsState extends State<DirectionDetails> {
   List<DirectionDetailsToken> _buildTokens() {
     List<DirectionDetailsToken> tokens = [];
     DateTime departure = widget.way.departureTime ?? DateTime.now();
-    DateTime prevDeparture = departure;
+    // Used to compute the waiting time for walking steps
+    DateTime prevArrival = departure;
     // A walking step is left pending so that waiting time can be computed
     // if next step is Transit
     // A Transit step is left pending to decide later if showWalking should
@@ -206,6 +207,7 @@ class DirectionDetailsState extends State<DirectionDetails> {
             ));
           }
           pending = WalkingInfo(step.duration, step.distance, null);
+          prevArrival = prevArrival.add(step.duration);
         }
       } else {
         var transit = mode as m.Transit;
@@ -222,7 +224,7 @@ class DirectionDetailsState extends State<DirectionDetails> {
           ));
         }
         if (pending != null && pending is WalkingInfo) {
-          Duration waitTime = transit.departureTime.difference(prevDeparture);
+          Duration waitTime = transit.departureTime.difference(prevArrival);
           tokens.add(WalkingInfo(pending.duration, pending.distance, waitTime));
           showWalking = true;
           pending = null;
@@ -306,6 +308,7 @@ class DirectionDetailsState extends State<DirectionDetails> {
           color,
           showWalking: false,
         );
+        prevArrival = transit.arrivalTime;
       }
     }
 

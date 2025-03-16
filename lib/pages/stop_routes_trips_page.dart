@@ -286,7 +286,7 @@ class RouteTripsPageForStopState extends State<RouteTripsPageForStop> {
       setState(() {
         isAutoReloading = true;
       });
-      //transBloc.add(tb.FetchTripsForStop(widget.stop, offTime));
+      transBloc.add(tb.FetchTripsForStop(widget.stop, offTime));
     });
   }
 
