@@ -74,7 +74,10 @@ class NewsPage extends StatelessWidget {
                                 loc.goToNews,
                               ),
                             ),
-                            Icon(MingCuteIcons.mgc_share_3_line)
+                            Icon(
+                              MingCuteIcons.mgc_share_3_line,
+                              color: theme.colorScheme.onPrimary,
+                            )
                           ],
                         ),
                       );
