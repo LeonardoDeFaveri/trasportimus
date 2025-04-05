@@ -7,7 +7,7 @@ part of 'news.dart';
 // **************************************************************************
 
 News _$NewsFromJson(Map<String, dynamic> json) => News(
-      agencyId: (json['agencyId'] as num).toInt(),
+      agencyId: json['agencyId'] as String,
       details: json['details'] as String,
       header: json['header'] as String,
       routeIds: (json['routeIds'] as List<dynamic>)
@@ -18,7 +18,7 @@ News _$NewsFromJson(Map<String, dynamic> json) => News(
       endDate: DateTime.parse(json['endDate'] as String),
       url: Uri.parse(json['url'] as String),
       stopId: (json['stopId'] as num?)?.toInt(),
-      idFeed: json['idFeed'] as String?,
+      idFeed: (json['idFeed'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$NewsToJson(News instance) => <String, dynamic>{

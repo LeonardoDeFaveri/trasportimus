@@ -6,10 +6,10 @@ part 'news.g.dart';
 
 @JsonSerializable()
 class News implements Equatable {
-  late final int agencyId;
+  late final String agencyId;
   late final String details;
   late final String header;
-  late final String? idFeed;
+  late final int? idFeed;
   late final List<int> routeIds;
   late final String serviceType;
   late final DateTime startDate;
