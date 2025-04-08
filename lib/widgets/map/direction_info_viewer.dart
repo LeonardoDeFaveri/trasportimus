@@ -14,6 +14,8 @@ import 'package:trasportimus_repository/model/model.dart';
 
 enum ViewerStatus { all, single, pending, error, noData }
 
+const Duration offset = Duration(hours: 2);
+
 class DirectionInfoViewer extends StatefulWidget {
   final StreamController<Way?> stream;
   final void Function(ViewerStatus) popEnabler;
@@ -70,7 +72,7 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
               } else {
                 setState(() {
                   info = state.directionInfo;
-                  refDateTime = state.refDateTime;
+                  refDateTime = state.refDateTime.add(offset);
                   status = ViewerStatus.all;
                 });
               }
@@ -264,6 +266,6 @@ class DirectionInfoViewerState extends State<DirectionInfoViewer> {
   }
 
   Widget _buildSingleView(BuildContext context, ThemeData theme) {
-    return SliverToBoxAdapter(child: DirectionDetails(selected!));
+    return SliverToBoxAdapter(child: DirectionDetails(selected!, refDateTime));
   }
 }

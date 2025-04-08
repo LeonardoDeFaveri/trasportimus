@@ -12,8 +12,8 @@ import 'package:trasportimus/widgets/tiles/route.dart';
 import 'package:trasportimus_repository/model/model.dart';
 import 'package:trasportimus_repository/model/route.dart' as r;
 
-const Duration offset = Duration(hours: -1);
-const Duration negOffset = Duration(hours: 1);
+const Duration offset = Duration(hours: -2);
+const Duration negOffset = Duration(hours: 2);
 
 class TripTimelineHeader extends StatelessWidget {
   final Trip? trip;
@@ -211,11 +211,13 @@ class TripTimelineHeader extends StatelessWidget {
     AppLocalizations loc = AppLocalizations.of(context)!;
     String text = loc.noReading;
     if (trip!.lastUpdate != null) {
+      DateTime lastUpdate = trip!.lastUpdate!.add(negOffset);
       text = loc.lastReading(
-          formatTime(trip!.lastUpdate!.hour + 1, trip!.lastUpdate!.minute));
+          formatTime(lastUpdate.hour, lastUpdate.minute));
     } else if (pred != null && pred.lastUpdate != null) {
+      DateTime predLastUpdate = pred.lastUpdate!.add(negOffset);
       text = loc.lastReading(format(
-          '{:0>2}:{:0>2}', pred.lastUpdate!.hour + 1, pred.lastUpdate!.minute));
+          '{:0>2}:{:0>2}', predLastUpdate.hour, predLastUpdate.minute));
     }
     return Text(
       text,

@@ -8,8 +8,9 @@ import 'package:trasportimus_repository/model/model.dart' as m;
 
 class DirectionDetails extends StatefulWidget {
   final m.Way way;
+  final DateTime refDateTime;
 
-  const DirectionDetails(this.way, {super.key});
+  const DirectionDetails(this.way, this.refDateTime, {super.key});
 
   @override
   State<StatefulWidget> createState() => DirectionDetailsState();
@@ -170,7 +171,7 @@ class DirectionDetailsState extends State<DirectionDetails> {
 
   List<DirectionDetailsToken> _buildTokens() {
     List<DirectionDetailsToken> tokens = [];
-    DateTime departure = widget.way.departureTime ?? DateTime.now();
+    DateTime departure = widget.way.departureTime ?? widget.refDateTime;
     // Used to compute the waiting time for walking steps
     DateTime prevArrival = departure;
     // A walking step is left pending so that waiting time can be computed

@@ -22,8 +22,8 @@ class StopTripsPage extends StatefulWidget {
   State<StatefulWidget> createState() => StopTripsPageState();
 }
 
-const Duration offset = Duration(hours: -1);
-const Duration negOffset = Duration(hours: 1);
+const Duration offset = Duration(hours: -2);
+const Duration negOffset = Duration(hours: 2);
 
 class StopTripsPageState extends State<StopTripsPage> {
   late final tb.TransportBloc transBloc;
