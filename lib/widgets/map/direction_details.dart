@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:timelines/timelines.dart';
+import 'package:trasportimus/l10n/app_localizations.dart';
 import 'package:trasportimus/widgets/map/direction_details_tokens.dart';
 import 'package:trasportimus/widgets/map/token_tiles.dart';
 import 'package:trasportimus_repository/model/model.dart' as m;

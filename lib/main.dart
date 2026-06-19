@@ -8,6 +8,7 @@ import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trasportimus/blocs/prefs/prefs_bloc.dart';
 import 'package:trasportimus/blocs/transport/transport_bloc.dart';
+import 'package:trasportimus/l10n/app_localizations.dart';
 import 'package:trasportimus/l10n/l10n.dart';
 import 'package:trasportimus/pages/main_page.dart';
 import 'package:trasportimus/pages/map_page.dart';
@@ -15,7 +16,6 @@ import 'package:trasportimus/pages/routes_area_selector.dart';
 import 'package:trasportimus/pages/settings.dart';
 import 'package:trasportimus/pages/stops_list.dart';
 import 'package:trasportimus/utils.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

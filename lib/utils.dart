@@ -1,12 +1,12 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:choice/choice.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:format/format.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:trasportimus/blocs/transport/transport_bloc.dart';
+import 'package:trasportimus/l10n/app_localizations.dart';
 import 'package:trasportimus_repository/model/model.dart' as m;
 
 int compareRoutes(m.Route r1, m.Route r2) {

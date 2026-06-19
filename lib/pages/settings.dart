@@ -1,8 +1,8 @@
 import 'package:choice/choice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:trasportimus/blocs/prefs/prefs_bloc.dart';
+import 'package:trasportimus/l10n/app_localizations.dart';
 import 'package:trasportimus/utils.dart';
 
 class SettingsPage extends StatefulWidget {

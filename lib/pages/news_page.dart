@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
+import 'package:trasportimus/l10n/app_localizations.dart';
 import 'package:trasportimus/utils.dart';
 import 'package:trasportimus_repository/model/model.dart' as m;
 import 'package:url_launcher/link.dart';

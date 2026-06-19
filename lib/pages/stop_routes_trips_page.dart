@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:trasportimus/blocs/prefs/prefs_bloc.dart' as pb;
 import 'package:trasportimus/blocs/transport/transport_bloc.dart' as tb;
+import 'package:trasportimus/l10n/app_localizations.dart';
 import 'package:trasportimus/pages/news_page.dart';
 import 'package:trasportimus/pages/stop_trips_page.dart';
 import 'package:trasportimus/utils.dart';

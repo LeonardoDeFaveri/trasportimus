@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:trasportimus/blocs/prefs/prefs_bloc.dart' as pb;
 import 'package:trasportimus/blocs/transport/transport_bloc.dart' as tb;
+import 'package:trasportimus/l10n/app_localizations.dart';
 import 'package:trasportimus/utils.dart';
 import 'package:trasportimus/widgets/map/direction_details.dart';
 import 'package:trasportimus/widgets/map/direction_tile.dart';

@@ -1,12 +1,12 @@
 import 'package:choice/choice.dart';
 import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:format/format.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:pulsator/pulsator.dart';
 import 'package:trasportimus/blocs/prefs/prefs_bloc.dart';
+import 'package:trasportimus/l10n/app_localizations.dart';
 import 'package:trasportimus/utils.dart';
 import 'package:trasportimus/widgets/tiles/route.dart';
 import 'package:trasportimus_repository/model/model.dart';

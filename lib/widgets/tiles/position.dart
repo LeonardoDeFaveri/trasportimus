@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
+import 'package:trasportimus/l10n/app_localizations.dart';
 
 final class YourPositionTile extends StatelessWidget {
   const YourPositionTile({super.key});

@@ -2,12 +2,12 @@ import 'dart:collection';
 
 import 'package:choice/choice.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:ming_cute_icons/ming_cute_icons.dart';
 import 'package:trasportimus/blocs/prefs/prefs_bloc.dart' as pb;
 import 'package:trasportimus/blocs/transport/transport_bloc.dart' as tb;
+import 'package:trasportimus/l10n/app_localizations.dart';
 import 'package:trasportimus/utils.dart';
 import 'package:trasportimus/widgets/tiles/stop.dart';
 import 'package:trasportimus_repository/model/model.dart';
